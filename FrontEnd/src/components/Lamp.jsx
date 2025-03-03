@@ -7,7 +7,7 @@ import FloatingDockDesktop from "./FloatingDockDesktop";
 
 export function Lamp() {
   return (
-    <div>
+    <div className="select-none">
       <LampContainer>
         <motion.h1
           initial={{ opacity: 0.5, y: 100 }}
