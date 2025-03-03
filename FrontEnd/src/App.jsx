@@ -3,12 +3,14 @@ import FloatingDockDesktop from "./components/FloatingDockDesktop";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { Lamp } from "./components/Lamp";
+import Developers from "./components/Developers";
 
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Lamp />} />
+        <Route path="/developers" element={<Developers />} />
         {/* <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />  */}
       </Routes>

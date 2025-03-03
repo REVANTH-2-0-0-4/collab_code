@@ -22,8 +22,8 @@ export function Lamp() {
           Collab Code <br />
           <TypewriterEffect
             words={[
-              { text: "Code " }, // Note: I removed the extra spaces here
-              { text: "the " }, // The TypewriterEffect component will handle spacing properly
+              { text: "Code " }, 
+              { text: "the " },
               { text: "right " },
               { text: "way" },
             ]}
