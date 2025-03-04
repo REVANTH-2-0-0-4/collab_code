@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { TiHome } from "react-icons/ti";
 import {
   AnimatePresence,
   useMotionValue,
@@ -28,11 +29,12 @@ const FloatingDockDesktop = ({ className }) => {
       isExternal: false,
     },
     {
-      title: "GitHub",
-      icon: <Github />,
-      path: "https://github.com/REVANTH-2-0-0-4/collab_code",
-      isExternal: true,
+      title: "Home",
+      icon: <TiHome  size={32}  />,
+      path: "/",
+      isExternal: false,
     },
+    
     {
       title: "Documentation",
       icon: <FileText />,
@@ -44,7 +46,8 @@ const FloatingDockDesktop = ({ className }) => {
       icon: <Users />,
       path: "/developers",
       isExternal: false,
-    },
+    }
+    
   ];
 
   return (
