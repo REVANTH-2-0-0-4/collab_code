@@ -3,6 +3,7 @@ import FloatingDockDesktop from "./components/FloatingDockDesktop";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { Lamp } from "./components/Lamp";
+import Auth from "./components/Auth.jsx"
 import {Developers} from "./components/Developers";
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Lamp />} />
         <Route path="/developers" element={<Developers />} />
+        <Route path="/login" element={<Auth />} />
         {/* <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />  */}
       </Routes>
