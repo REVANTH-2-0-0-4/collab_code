@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Input } from "./Input";
-import { Label } from "./Label";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import FloatingDockDesktop from "./FloatingDockDesktop";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -28,27 +28,27 @@ const Signup = () => {
       alert("Passwords do not match!");
       return;
     }
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
   };
 
   const handleGoogleSignIn = async () => {
     try {
       // In a real implementation, you would use Google OAuth
       // This is a placeholder for the Google Sign-In logic
-      console.log('Initiating Google Sign-In');
+      console.log("Initiating Google Sign-In");
       // Typically, this would involve:
       // 1. Calling a Google Sign-In API
       // 2. Handling the OAuth flow
       // 3. Receiving user information
       // 4. Sending the token to your backend for verification
     } catch (error) {
-      console.error('Google Sign-In error:', error);
-      alert('Failed to sign in with Google');
+      console.error("Google Sign-In error:", error);
+      alert("Failed to sign in with Google");
     }
   };
 
   const togglePasswordVisibility = (type) => {
-    if (type === 'password') {
+    if (type === "password") {
       setShowPassword(!showPassword);
     } else {
       setShowConfirmPassword(!showConfirmPassword);
@@ -56,12 +56,22 @@ const Signup = () => {
   };
 
   return (
-    <div className='select-none '>
+    <div className="select-none ">
+      <FloatingDockDesktop
+        visibleItems={{
+          home: true,
+        }}
+        className="fixed top-15 left-[90%] "
+      />
       <div className="bg-gradient-to-br from-[#014860] to-[#02091B] min-h-screen flex items-center justify-center p-4 font-serif ">
         <div className="w-full max-w-md rounded-2xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
-            <p className="text-sm text-gray-300">Join Collab Code - Your Digital Workspace</p>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Create Account
+            </h2>
+            <p className="text-sm text-gray-300">
+              Join Collab Code - Your Digital Workspace
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -112,7 +122,7 @@ const Signup = () => {
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility('password')}
+                onClick={() => togglePasswordVisibility("password")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -131,7 +141,7 @@ const Signup = () => {
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility('confirmPassword')}
+                onClick={() => togglePasswordVisibility("confirmPassword")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -161,7 +171,10 @@ const Signup = () => {
           </form>
 
           <div className="text-center text-sm text-gray-300 mt-6">
-            Already have an account? <a href="/login" className="text-[#00BEDE] hover:underline">Log In</a>
+            Already have an account?{" "}
+            <a href="/login" className="text-[#00BEDE] hover:underline">
+              Log In
+            </a>
           </div>
         </div>
       </div>

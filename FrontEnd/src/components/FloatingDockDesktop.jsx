@@ -11,44 +11,50 @@ import {
 import { cn } from "../lib/utils";
 import { Github, LogIn, UserPlus, FileText, Users } from "lucide-react";
 
-const FloatingDockDesktop = ({ className }) => {
+const FloatingDockDesktop = ({ className, visibleItems = {} }) => {
   let mouseX = useMotionValue(Infinity);
   const navigate = useNavigate();
 
-  const items = [
+  const allItems = [
     {
+      key: "login",
       title: "Login",
       icon: <LogIn />,
       path: "/login",
       isExternal: false,
     },
     {
+      key: "signup",
       title: "Sign Up",
       icon: <UserPlus />,
       path: "/signup",
       isExternal: false,
     },
     {
+      key: "home",
       title: "Home",
-      icon: <TiHome  size={32}  />,
+      icon: <TiHome size={32} />,
       path: "/",
       isExternal: false,
     },
-    
     {
+      key: "docs",
       title: "Documentation",
       icon: <FileText />,
       path: "https://github.com/REVANTH-2-0-0-4/collab_code/blob/main/README.md",
       isExternal: true,
     },
     {
+      key: "team",
       title: "Team",
       icon: <Users />,
       path: "/developers",
       isExternal: false,
-    }
-    
+    },
   ];
+
+  // Filter items based on the `visibleItems` prop
+  const filteredItems = allItems.filter((item) => visibleItems[item.key]);
 
   return (
     <motion.div
@@ -59,7 +65,7 @@ const FloatingDockDesktop = ({ className }) => {
         className
       )}
     >
-      {items.map((item) => (
+      {filteredItems.map((item) => (
         <IconContainer 
           mouseX={mouseX} 
           key={item.title} 

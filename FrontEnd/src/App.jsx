@@ -1,5 +1,4 @@
 import React from "react";
-import FloatingDockDesktop from "./components/FloatingDockDesktop";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { Lamp } from "./components/Lamp";
