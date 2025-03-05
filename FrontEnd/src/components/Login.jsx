@@ -1,0 +1,104 @@
+import React, { useState } from 'react';
+import { Input } from "./Input";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+
+const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Login submitted:', formData);
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      console.log('Initiating Google Sign-In');
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      alert('Failed to sign in with Google');
+    }
+  };
+
+  return (
+    <div className='select-none'>
+      <div className="bg-gradient-to-br from-[#02091B] to-[#014860] min-h-screen flex items-center justify-center p-4 font-serif">
+        <div className="w-full max-w-md rounded-2xl p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Log In</h2>
+            <p className="text-sm text-gray-300">Welcome back to Collab Code</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              id="email"
+              type="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="bg-[#02091B] border-[#00BEDE] text-white"
+              required
+            />
+
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className="bg-[#02091B] border-[#00BEDE] text-white pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#00607A] hover:bg-[#004052] text-white py-3 rounded-lg transition-colors duration-300 font-semibold"
+            >
+              Log In
+            </button>
+
+            <div className="flex items-center my-4">
+              <div className="flex-grow border-t border-gray-600"></div>
+              <span className="px-4 text-gray-400 text-sm">or</span>
+              <div className="flex-grow border-t border-gray-600"></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="w-full bg-[#00607A] hover:bg-[#004052] text-white py-3 rounded-lg transition-colors duration-300 font-semibold flex items-center justify-center"
+            >
+              <FaGoogle className="mr-2" /> Continue with Google
+            </button>
+          </form>
+
+          <div className="text-center text-sm text-gray-300 mt-6">
+            Don't have an account? <a href="/signup" className="text-[#00BEDE] hover:underline">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
