@@ -4,7 +4,6 @@ import { cn } from "../lib/utils";
 import { TypewriterEffect } from "./TypewriterEffect";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 
-
 export function Lamp() {
   return (
     <div className="select-none">
@@ -22,7 +21,7 @@ export function Lamp() {
           Collab Code <br />
           <TypewriterEffect
             words={[
-              { text: "Code " }, 
+              { text: "Code " },
               { text: "the " },
               { text: "right " },
               { text: "way" },
@@ -31,10 +30,19 @@ export function Lamp() {
           />
         </motion.h1>
       </LampContainer>
-      <FloatingDockDesktop className="fixed bottom-25 left-1/2 -translate-x-1/2 "></FloatingDockDesktop>
+      <FloatingDockDesktop
+        visibleItems={{
+          login: true,
+          signup: true,
+          home: true,
+          docs: true,
+          team: true,
+        }}
+        className="fixed bottom-25 left-1/2 -translate-x-1/2 "
+      />
+
+      
     </div>
-
-
   );
 }
 

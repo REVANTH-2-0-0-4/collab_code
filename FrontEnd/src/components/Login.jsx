@@ -1,38 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import  FloatingDockDesktop  from "./FloatingDockDesktop";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [id]: value
+      [id]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
+    console.log("Login submitted:", formData);
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      console.log('Initiating Google Sign-In');
+      console.log("Initiating Google Sign-In");
     } catch (error) {
-      console.error('Google Sign-In error:', error);
-      alert('Failed to sign in with Google');
+      console.error("Google Sign-In error:", error);
+      alert("Failed to sign in with Google");
     }
   };
 
   return (
-    <div className='select-none'>
+    <div className="select-none">
+      <FloatingDockDesktop
+        visibleItems={{
+          home: true,
+        }}
+        className="fixed top-15 left-[90%] "
+      />
       <div className="bg-gradient-to-br from-[#02091B] to-[#014860] min-h-screen flex items-center justify-center p-4 font-serif">
         <div className="w-full max-w-md rounded-2xl p-8">
           <div className="text-center mb-8">
@@ -93,7 +100,10 @@ const Login = () => {
           </form>
 
           <div className="text-center text-sm text-gray-300 mt-6">
-            Don't have an account? <a href="/signup" className="text-[#00BEDE] hover:underline">Sign Up</a>
+            Don't have an account?{" "}
+            <a href="/signup" className="text-[#00BEDE] hover:underline">
+              Sign Up
+            </a>
           </div>
         </div>
       </div>

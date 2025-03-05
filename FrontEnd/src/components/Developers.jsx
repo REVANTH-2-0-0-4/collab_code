@@ -134,7 +134,7 @@ export const Developers = ({ autoplay = false }) => {
                   duration: 0.2,
                   ease: "easeInOut",
                 }}>
-                <h3 className="text-2xl font-bold dark:text-white text-black">
+                <h3 className="text-2xl font-bold dark:text-white text-white">
                   {testimonials[active].name}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-neutral-500">
@@ -183,7 +183,16 @@ export const Developers = ({ autoplay = false }) => {
           </div>
         </div>
       </div>
-      <FloatingDockDesktop  className="fixed bottom-20 left-1/2 -translate-x-1/2 "></FloatingDockDesktop>
+      <FloatingDockDesktop
+        visibleItems={{
+          login: true,
+          signup: true,
+          home: true,
+          docs: true,
+          team: true,
+        }}
+        className="fixed bottom-25 left-1/2 -translate-x-1/2 "
+      />
     </div>
 
 
