@@ -37,6 +37,7 @@ const Signup = () => {
     const res = await axios.post("/users/register", formData);
     console.log(res);
     // reroute to login page
+    
   };
 
   const handleGoogleSignIn = async () => {

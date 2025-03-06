@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "../config/axios.js";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import  FloatingDockDesktop  from "./FloatingDockDesktop";
@@ -18,9 +19,11 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log("Login submitted:", formData);
+    const res = await axios.post("/users/login", formData);
+    console.log(res);
   };
 
   const handleGoogleSignIn = async () => {
