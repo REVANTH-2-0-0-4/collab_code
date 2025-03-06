@@ -7,7 +7,10 @@ import userrouter from "./routes/user.routes.js";
 // import usermodel from "./db/models/user_model.js"
 import cors from "cors";
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5175", 
+    credentials: true,
+}));
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 app.use(cookieParser());

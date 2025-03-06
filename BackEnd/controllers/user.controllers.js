@@ -16,7 +16,7 @@ export const createusercontroller = async (req, res) => {
             const token = user.generateJWT();
             delete user._doc.password;
 
-            res.cookie("token",token);
+            res.cookie("token", token, { httpOnly: false });
 
             res.status(201).json({ user, token });
              
