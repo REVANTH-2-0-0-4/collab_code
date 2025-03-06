@@ -1,17 +1,20 @@
+import axios from "../config/axios.js";
 import React, { useState } from "react";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 
+
+
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showconfirmpassword, setShowconfirmpassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    confirmpassword: "",
   });
 
   const handleInputChange = (e) => {
@@ -22,13 +25,18 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmpassword) {
       alert("Passwords do not match!");
       return;
     }
-    console.log("Form submitted:", formData);
+    // console.log(import.meta.env.VITE_API_URL);
+    console.log("Form submitted:", formData); 
+
+    const res = await axios.post("/users/register", formData);
+    console.log(res);
+    // reroute to login page
   };
 
   const handleGoogleSignIn = async () => {
@@ -51,7 +59,7 @@ const Signup = () => {
     if (type === "password") {
       setShowPassword(!showPassword);
     } else {
-      setShowConfirmPassword(!showConfirmPassword);
+      setShowconfirmpassword(!showconfirmpassword);
     }
   };
 
@@ -78,10 +86,10 @@ const Signup = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Input
-                  id="firstName"
+                  id="firstname"
                   type="text"
                   placeholder="First Name"
-                  value={formData.firstName}
+                  value={formData.firstname}
                   onChange={handleInputChange}
                   className="bg-[#02091B] border-[#00BEDE] text-white"
                   required
@@ -89,10 +97,10 @@ const Signup = () => {
               </div>
               <div>
                 <Input
-                  id="lastName"
+                  id="lastname"
                   type="text"
                   placeholder="Last Name"
-                  value={formData.lastName}
+                  value={formData.lastname}
                   onChange={handleInputChange}
                   className="bg-[#02091B] border-[#00BEDE] text-white"
                   required
@@ -131,20 +139,20 @@ const Signup = () => {
 
             <div className="relative">
               <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
+                id="confirmpassword"
+                type={showconfirmpassword ? "text" : "password"}
                 placeholder="Confirm Password"
-                value={formData.confirmPassword}
+                value={formData.confirmpassword}
                 onChange={handleInputChange}
                 className="bg-[#02091B] border-[#00BEDE] text-white pr-12"
                 required
               />
               <button
                 type="button"
-                onClick={() => togglePasswordVisibility("confirmPassword")}
+                onClick={() => togglePasswordVisibility("confirmpassword")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                {showconfirmpassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
 
