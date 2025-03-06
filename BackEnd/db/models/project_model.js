@@ -10,6 +10,12 @@ const  projectSchema = new mongoose.Schema({
     users  : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "user"
-    }]
+    }],
+    description : {
+        type : String ,
+        lowercase : true,
+        required : true,
+        trim : true,
+    }
 })
 export default mongoose.model("project",projectSchema);   
