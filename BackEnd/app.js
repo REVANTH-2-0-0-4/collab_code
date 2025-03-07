@@ -2,13 +2,13 @@ import connect from "./db/db.js";
 connect();
 import express from "express";
 import userrouter from "./routes/user.routes.js";
-// import projectroutes from "./routes/project.routes.js"
+import projectroutes from "./routes/project.routes.js"
 // import airoutes from "./routes/ai.routes.js"
 // import usermodel from "./db/models/user_model.js"
 import cors from "cors";
 const app = express();
 app.use(cors({
-    origin: "http://localhost:5175", 
+    origin: "http://localhost:5174", 
     credentials: true,
 }));
 import morgan from "morgan";
@@ -30,7 +30,7 @@ app.get("/users", (req, res) => {
 app.listen(3000,()=>{
     console.log("server is running on the port 3000");
 })
-// app.use("/projects", projectroutes);
+app.use("/projects", projectroutes);
 app.use("/users", userrouter);
 // app.use("/ai", airoutes);
 export default app;
