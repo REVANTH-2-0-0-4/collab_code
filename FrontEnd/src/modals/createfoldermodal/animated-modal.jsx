@@ -1,9 +1,21 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Modal = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+// Create a context for the modal
+const ModalContext = React.createContext();
+
+// Hook to use the modal context
+export const useModal = () => {
+  const context = React.useContext(ModalContext);
+  if (!context) {
+    throw new Error("useModal must be used within a Modal component");
+  }
+  return context;
+};
+
+export const Modal = ({ children }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -28,28 +40,16 @@ const Modal = ({ children }) => {
   );
 };
 
-// Create a context for the modal
-const ModalContext = React.createContext();
-
-// Hook to use the modal context
-export const useModal = () => {
-  const context = React.useContext(ModalContext);
-  if (!context) {
-    throw new Error("useModal must be used within a Modal component");
-  }
-  return context;
-};
-
-const ModalTrigger = ({ children, className }) => {
+export const ModalTrigger = ({ children, className, ...props }) => {
   const { openModal } = useModal();
   return (
-    <button onClick={openModal} className={className}>
+    <button onClick={openModal} className={className} {...props}>
       {children}
     </button>
   );
 };
 
-const ModalBody = ({ children }) => {
+export const ModalBody = ({ children }) => {
   const { isOpen, closeModal } = useModal();
 
   return (
@@ -83,16 +83,14 @@ const ModalBody = ({ children }) => {
   );
 };
 
-const ModalContent = ({ children }) => {
+export const ModalContent = ({ children }) => {
   return <div className="p-6">{children}</div>;
 };
 
-const ModalFooter = ({ children, className }) => {
+export const ModalFooter = ({ children, className = "" }) => {
   return (
     <div className={`p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end ${className}`}>
       {children}
     </div>
   );
 };
-
-export { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter };

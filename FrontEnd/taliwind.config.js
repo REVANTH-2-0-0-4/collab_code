@@ -20,6 +20,7 @@ module.exports = {
   },
   plugins: [
     plugin(addVariablesForColors),
+    require('tailwind-scrollbar-hide')
   ],
 };
 
