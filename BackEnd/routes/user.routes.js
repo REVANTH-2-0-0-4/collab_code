@@ -1,6 +1,7 @@
 import express from "express";
 import * as usercontroller from "../controllers/user.controllers.js";
 import * as userservices from "../services/user.services.js";
+import * as auth from "../middlewares/auth.middleware.js";
 import { body } from "express-validator";
 
 const userrouter = express.Router();
@@ -23,7 +24,6 @@ userrouter.post(
   usercontroller.createusercontroller
 );
 
-
 // login 
 userrouter.post("/login",
 
@@ -33,7 +33,6 @@ userrouter.post("/login",
   usercontroller.logincontroller
 )
 
-
-// router.get("/logout",authmiddleware.auth, usercontroller.logoutcontroller);
+userrouter.get("/logout" , auth.auth, usercontroller.logoutcontroller);
 
 export default userrouter;
