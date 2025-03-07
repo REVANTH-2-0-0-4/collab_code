@@ -1,11 +1,12 @@
 import axios from "../config/axios.js";
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { UserContext } from "context/Usercontext.jsx";
+import { UserContext } from "../context/Usercontext.jsx";
+
+
 
 const Signup = () => {
   const navigate = useNavigate();

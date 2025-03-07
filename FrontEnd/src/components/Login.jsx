@@ -1,11 +1,12 @@
 import React, { useContext, useState } from "react";
 import axios from "../config/axios.js";
-import { useContext } from "react";
+
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "context/Usercontext.jsx";
+import { UserContext } from "../context/Usercontext.jsx";
+
 const Login = () => {
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
