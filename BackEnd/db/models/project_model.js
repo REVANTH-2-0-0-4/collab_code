@@ -7,15 +7,15 @@ const  projectSchema = new mongoose.Schema({
         unique : true,
         trim : true,
     },
-    users  : [{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "user"
-    }],
     description : {
         type : String ,
         lowercase : true,
         required : true,
         trim : true,
-    }
+    },
+    users  : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "user"
+    }]
 })
 export default mongoose.model("project",projectSchema);   
