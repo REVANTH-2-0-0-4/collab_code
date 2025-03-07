@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -34,9 +35,22 @@ const Signup = () => {
     // console.log(import.meta.env.VITE_API_URL);
     console.log("Form submitted:", formData); 
 
-    const res = await axios.post("/users/register", formData);
-    console.log(res);
-    // reroute to login page
+    axios.post('/users/register', {
+      firstname,
+      lastname,
+      email,
+      password,
+      confirmpassword
+    })
+      .then((res) => {
+        console.log(res.data);
+        localStorage.setItem('token',res.data.token);
+        // setUser(res.data);
+        navigate('/');
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      })
     
   };
 

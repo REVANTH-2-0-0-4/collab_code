@@ -190,6 +190,7 @@ export const Developers = ({ autoplay = false }) => {
           home: true,
           docs: true,
           team: true,
+          projects:true,
         }}
         className="fixed bottom-25 left-1/2 -translate-x-1/2 "
       />

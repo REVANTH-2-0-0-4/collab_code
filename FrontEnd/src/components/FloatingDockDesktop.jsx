@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { TiHome } from "react-icons/ti";
+import { GrProjects } from "react-icons/gr";
 import {
   AnimatePresence,
   useMotionValue,
@@ -35,6 +36,13 @@ const FloatingDockDesktop = ({ className, visibleItems = {} }) => {
       title: "Home",
       icon: <TiHome size={32} />,
       path: "/",
+      isExternal: false,
+    },
+    {
+      key: "projects",
+      title: "projects",
+      icon: <GrProjects />,
+      path: "/projects",
       isExternal: false,
     },
     {

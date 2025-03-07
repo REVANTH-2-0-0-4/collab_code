@@ -3,6 +3,7 @@ import axios from "../config/axios.js";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import  FloatingDockDesktop  from "./FloatingDockDesktop";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,9 +22,18 @@ const Login = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
-    const res = await axios.post("/users/login", formData);
-    console.log(res);
+     axios.post('/users/login',formData)
+    .then((res)=>{
+      // console.log("response : " ,res);
+      // console.log("response data : " ,res.data);
+      // console.log("response token  : " ,res.data.token);
+      localStorage.setItem('token',res.data.token);
+      // setUser(res.data.response);
+      navigate('/');
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
   };
 
   const handleGoogleSignIn = async () => {
