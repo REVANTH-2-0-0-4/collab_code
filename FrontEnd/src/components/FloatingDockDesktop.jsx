@@ -49,8 +49,8 @@ const FloatingDockDesktop = ({ className, visibleItems = {} }) => {
       key: "docs",
       title: "Documentation",
       icon: <FileText />,
-      path: "https://github.com/REVANTH-2-0-0-4/collab_code/blob/main/README.md",
-      isExternal: true,
+      path: "/documentation",
+      isExternal: false,
     },
     {
       key: "team",

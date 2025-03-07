@@ -10,7 +10,7 @@ import { UserContext } from "../context/UserContext.jsx";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const  {setUser}  = useContext(UserContext);
+  const  {user,setUser}  = useContext(UserContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showconfirmpassword, setShowconfirmpassword] = useState(false);

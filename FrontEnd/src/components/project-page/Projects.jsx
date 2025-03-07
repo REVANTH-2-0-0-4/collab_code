@@ -8,6 +8,8 @@ import { GlowButton, ChevronIcon } from "../../modals/createfoldermodal/glow-but
 
 export const HoverEffect = () => {
   const [projects, setProjects] = useState([]);
+  
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const fetchProjects = useCallback(async () => {
     try {
       const res = await axios.get("/projects/all");
@@ -18,8 +20,6 @@ export const HoverEffect = () => {
     }
   }, []);
 
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
@@ -27,7 +27,7 @@ export const HoverEffect = () => {
   return (
     <div className="bg-[#02162A] select-none min-h-screen p-10 relative font-serif">
       {/* Top left project creation button */}
-      <div className="absolute  top-15 left-20 z-30">
+      <div className="absolute top-15 left-20 z-30">
         <Modal>
           <ModalTrigger>
             <GlowButton>
@@ -46,12 +46,12 @@ export const HoverEffect = () => {
                 ✨
               </h4>
 
-              <ProjectFormContent />
+              <ProjectFormContent fetchProjects={fetchProjects} />
             </ModalContent>
 
             <ModalFooter className="gap-4">
               <CancelButton />
-              <SubmitButton />
+              {/* Removed the SubmitButton since we're handling submission in the form */}
             </ModalFooter>
           </ModalBody>
         </Modal>
@@ -99,18 +99,36 @@ export const HoverEffect = () => {
 };
 
 // Form content component
-const ProjectFormContent = () => {
+const ProjectFormContent = ({ fetchProjects }) => {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const { closeModal } = useModal();
 
-  const handleSubmit = () => {
-    // This function will be implemented by you
-    console.log("Project created:", { projectName, projectDescription });
-    // Reset form
-    setProjectName("");
-    setProjectDescription("");
-    closeModal();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (projectName === "" || projectDescription === "") {
+      alert("Project name and description are required");
+      return; // Don't close modal if validation fails
+    }
+    
+    try {
+      const res = await axios.post("/projects/create", { 
+        name: projectName, 
+        description: projectDescription 
+      });
+      console.log("Project created:", res.data);
+      
+      // Refresh the project list after creation
+      await fetchProjects();
+      
+      // Reset form and close modal
+      setProjectName("");
+      setProjectDescription("");
+      closeModal();
+    } catch (err) {
+      console.error("Error creating project:", err);
+      alert("Error creating project. Please try again.");
+    }
   };
 
   return (
@@ -185,23 +203,7 @@ const CancelButton = () => {
   );
 };
 
-// Submit button component
-const SubmitButton = () => {
-  const { closeModal } = useModal();
-
-  const handleSubmit = () => {
-    // Implementation of project submission
-    console.log("Project submitted");
-    closeModal();
-  };
-
-  return (
-    <GlowButton onClick={handleSubmit}>
-      <span>Submit</span>
-      <ChevronIcon />
-    </GlowButton>
-  );
-};
+// Removed the duplicate SubmitButton component since we handle submission in the form
 
 export const Card = ({ className, children }) => {
   return (
