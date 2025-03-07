@@ -48,3 +48,53 @@ export const logincontroller = async (req, res) => {
         }
     }
 }
+export const getallusers = async (req, res) => {
+    try {
+      const loggedin_user = req.user?.email;
+      if (!loggedin_user) {
+        return res.status(401).send("User not logged in.");
+      }
+      const user = await usermodel.findOne({ email: loggedin_user });
+      if (!user) {
+        return res.status(404).send("Logged-in user not found.");
+      }
+      const response = await userservice.allusersexceptid(user._id); 
+  
+      if (response.status === "error") {
+        return res.status(400).send(response.message);
+      }
+  
+    //   console.log("The response:", response);
+      return res.status(200).send(response.allusers);
+  
+    } catch (error) {
+      return res.status(500).send(error.message); // Changed to 500 for server-side error
+    }
+  };
+export const profilecontroller = async (req, res) => {
+    res.status(200).json({
+        user: req.user
+    })
+}
+export const allusersexceptid = async(userid) =>{
+    try {
+      if(!userid){
+         throw new Error(" project services didnot recieve the userid, may be you are not logged in ");
+      }
+      const allusers = await usermodel.find({
+        _id : { $ne : userid}
+      })
+    //   console.log(" all users : " , allusers);
+      
+      return {
+        "status" : "success",
+        "allusers" : allusers
+      };
+    } catch (error) {
+      return {
+       "status" : "error",
+       "message" : error.message
+      }
+    }
+   
+   }
