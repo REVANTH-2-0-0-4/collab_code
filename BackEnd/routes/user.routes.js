@@ -24,7 +24,6 @@ userrouter.post(
   usercontroller.createusercontroller
 );
 
-
 // login 
 userrouter.post("/login",
 
@@ -35,7 +34,6 @@ userrouter.post("/login",
 )
 userrouter.get("/allusers",authmiddleware.auth,usercontroller.getallusers);
 
-
-// router.get("/logout",authmiddleware.auth, usercontroller.logoutcontroller);
+userrouter.get("/logout" , authmiddleware.auth, usercontroller.logoutcontroller);
 
 export default userrouter;

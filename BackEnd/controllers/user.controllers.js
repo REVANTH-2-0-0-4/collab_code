@@ -1,7 +1,6 @@
 import { validationResult } from "express-validator";
 import * as userservice from "../services/user.services.js";
 
-
 export const createusercontroller = async (req, res) => {
 
     const errors = validationResult(req);
@@ -98,3 +97,17 @@ export const allusersexceptid = async(userid) =>{
     }
    
    }
+
+export const logoutcontroller = async (req, res) => {
+    try {
+        const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+        redisclient.set(token,'logout','EX',60*60*24);
+        res.status(200).json({
+            message : "user logged out successfully"
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(400).send(err);
+    }
+}
