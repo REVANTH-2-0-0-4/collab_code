@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import Context from "./context/Usercontext";
 import { Lamp } from "./components/Lamp";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
@@ -11,17 +11,20 @@ import { Developers } from "./components/Developers";
 const App = () => {
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Lamp />} />
-        <Route path="/developers" element={<Developers />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/projects" element={  <HoverEffect   />} />
-        {/* <Route path="/about" element={<About />} />
+    <Context>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Lamp />} />
+          <Route path="/developers" element={<Developers />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/projects" element={<HoverEffect />} />
+          {/* <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />  */}
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </Context>
+
   );
 };
 

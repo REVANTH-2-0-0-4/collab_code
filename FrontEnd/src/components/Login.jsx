@@ -5,10 +5,10 @@ import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/Usercontext.jsx";
+import { UserContext } from "@/context/Usercontext.jsx";
 
 const Login = () => {
-  const { setUser } = useContext(UserContext);
+  const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({

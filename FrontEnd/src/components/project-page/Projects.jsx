@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import FloatingDockDesktop from "../FloatingDockDesktop";
+import axios from "../../config/axios.js";
 
 
 export const HoverEffect = () => {
