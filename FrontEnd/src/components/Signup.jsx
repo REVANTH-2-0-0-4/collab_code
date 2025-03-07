@@ -4,10 +4,13 @@ import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
-
-
+import { useContext } from "react";
+import { UserContext } from "context/Usercontext.jsx";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showconfirmpassword, setShowconfirmpassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,25 +36,25 @@ const Signup = () => {
       return;
     }
     // console.log(import.meta.env.VITE_API_URL);
-    console.log("Form submitted:", formData); 
+    console.log("Form submitted:", formData);
 
-    axios.post('/users/register', {
-      firstname,
-      lastname,
-      email,
-      password,
-      confirmpassword
-    })
+    axios
+      .post("/users/register", {
+        firstname,
+        lastname,
+        email,
+        password,
+        confirmpassword,
+      })
       .then((res) => {
         console.log(res.data);
-        localStorage.setItem('token',res.data.token);
-        // setUser(res.data);
-        navigate('/');
+        localStorage.setItem("token", res.data.token);
+        setUser(res.data);
+        navigate("/");
       })
       .catch((err) => {
         console.log(err.response.data);
-      })
-    
+      });
   };
 
   const handleGoogleSignIn = async () => {

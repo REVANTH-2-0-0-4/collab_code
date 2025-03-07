@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "../config/axios.js";
+import { useContext } from "react";
 import { Input } from "./Input";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
-import  FloatingDockDesktop  from "./FloatingDockDesktop";
+import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
-
+import { UserContext } from "context/Usercontext.jsx";
 const Login = () => {
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,20 +23,21 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-     axios.post('/users/login',formData)
-    .then((res)=>{
-      // console.log("response : " ,res);
-      // console.log("response data : " ,res.data);
-      // console.log("response token  : " ,res.data.token);
-      localStorage.setItem('token',res.data.token);
-      // setUser(res.data.response);
-      navigate('/');
-    })
-    .catch((err)=>{
-      console.log(err);
-    })
+    axios
+      .post("/users/login", formData)
+      .then((res) => {
+        // console.log("response : " ,res);
+        // console.log("response data : " ,res.data);
+        // console.log("response token  : " ,res.data.token);
+        localStorage.setItem("token", res.data.token);
+        setUser(res.data.response);
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleGoogleSignIn = async () => {
