@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import FloatingDockDesktop from "../FloatingDockDesktop";
 import axios from "../../config/axios.js";
+import { ProjectFormModal } from "@/modals/createfoldermodal/ProjectFormModal";
 
 
 export const HoverEffect = () => {
- 
+
   const [projects, setProjects] = useState([]);
   const fetchProjects = useCallback(async () => {
 
@@ -25,6 +26,8 @@ export const HoverEffect = () => {
   return (
 
     <div className=" bg-[#02162A] select-none min-h-screen p-10">
+    <ProjectFormModal></ProjectFormModal>
+
       <FloatingDockDesktop
         visibleItems={{
           home: true,
