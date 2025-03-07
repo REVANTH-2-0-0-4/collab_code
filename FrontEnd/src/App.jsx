@@ -9,53 +9,6 @@ import { HoverEffect } from "./components/project-page/projects";
 import { Developers } from "./components/Developers";
 
 const App = () => {
-  const items = [
-    {
-      title: "Item 1",
-      description: "This is the description for item 1.",
-      link: "https://example.com/1",
-    },
-    {
-      title: "Item 2",
-      description: "This is the description for item 2.",
-      link: "https://example.com/2",
-    },
-    {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    },
-    {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    },
-    {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    }, {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    }, {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    }, {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    }, {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    }, {
-      title: "Item 3",
-      description: "This is the description for item 3.",
-      link: "https://example.com/3",
-    },
-  ];
 
   return (
     <Router>
@@ -64,7 +17,7 @@ const App = () => {
         <Route path="/developers" element={<Developers />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/projects" element={  <HoverEffect items={items} className="custom-class" />} />
+        <Route path="/projects" element={  <HoverEffect   />} />
         {/* <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />  */}
       </Routes>
