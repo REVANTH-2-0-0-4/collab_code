@@ -7,6 +7,9 @@ import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/Usercontext.jsx";
 
+import { useGoogleLogin } from "@react-oauth/google";
+
+
 const Login = () => {
   const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
@@ -15,6 +18,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -41,14 +45,37 @@ const Login = () => {
       });
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      console.log("Initiating Google Sign-In");
-    } catch (error) {
-      console.error("Google Sign-In error:", error);
-      alert("Failed to sign in with Google");
-    }
-  };
+  const handleGoogleSignIn = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      console.log(tokenResponse)
+      console.log("Access Token:", tokenResponse.access_token);
+
+      // Fetch user info from Google API
+      try {
+        const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+
+        const data = await res.json();
+        console.log("User Data:", data);
+        
+         const userDetails = {
+          email: data.email,           
+          firstName: data.given_name,  
+          lastName: data.family_name,  
+        };
+        console.log(userDetails);
+        //backend token
+
+        navigate("/");
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
+    onError: () => console.log("Login Failed"),
+    scope: "email profile", // Ensure correct scopes
+  });
 
   return (
     <div className="select-none">
