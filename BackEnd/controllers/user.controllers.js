@@ -2,11 +2,10 @@ import { validationResult } from "express-validator";
 import * as userservice from "../services/user.services.js";
 
 export const createusercontroller = async (req, res) => {
-
     const errors = validationResult(req);
     console.log(errors);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
     else {
         try {
@@ -30,7 +29,7 @@ export const createusercontroller = async (req, res) => {
 export const logincontroller = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
     else {
         const response = await userservice.loginuser(req.body);
@@ -68,8 +67,8 @@ export const getallusers = async (req, res) => {
   
     } catch (error) {
       return res.status(500).send(error.message); // Changed to 500 for server-side error
-    }
-  };
+  }
+};
 export const profilecontroller = async (req, res) => {
     res.status(200).json({
         user: req.user
@@ -96,7 +95,7 @@ export const allusersexceptid = async(userid) =>{
       }
     }
    
-   }
+  }
 
 export const logoutcontroller = async (req, res) => {
     try {
