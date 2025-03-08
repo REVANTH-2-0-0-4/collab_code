@@ -5,8 +5,10 @@ import axios from "../../config/axios.js";
 import { ProjectFormModal } from "@/modals/createfoldermodal/ProjectFormModal";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalTrigger, useModal } from "../../modals/createfoldermodal/animated-modal.jsx";
 import { GlowButton, ChevronIcon } from "../../modals/createfoldermodal/glow-button";
+import { useNavigate } from "react-router-dom";
 
 export const HoverEffect = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -23,6 +25,26 @@ export const HoverEffect = () => {
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
+  
+  const fetchprojectdata = async (id) => {
+    try {
+      const res = await axios.get(`/projects/get-project/${id}`);
+      console.log(res.project);
+      return res.project;
+    } catch (err) {
+      console.error("Error fetching project data:", err);
+      return null;
+    }
+  };
+
+  const handleProjectClick = async (id) => {
+    try {
+      const projectData = await fetchprojectdata(id);
+      navigate("/editor", { state: { projectdata: projectData } });
+    } catch (err) {
+      console.error("Error navigating to project:", err);
+    }
+  };
 
   return (
     <div className="bg-[#02162A] select-none min-h-screen p-10 relative font-serif">
@@ -67,9 +89,9 @@ export const HoverEffect = () => {
       <div className={`grid grid-cols-1 md:grid-cols-2 pt-30 lg:grid-cols-6 py-10 mt-14`}>
         {projects?.map((item, idx) => (
           <a
-            href={item?.link}
-            key={item?.link}
-            className="relative group block p-2 h-full w-full"
+            onClick={() => handleProjectClick(item._id)}
+            key={item._id}
+            className="relative group block p-2 h-full w-full cursor-pointer"
             onMouseEnter={() => setHoveredIndex(idx)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
@@ -202,8 +224,6 @@ const CancelButton = () => {
     </GlowButton>
   );
 };
-
-// Removed the duplicate SubmitButton component since we handle submission in the form
 
 export const Card = ({ className, children }) => {
   return (

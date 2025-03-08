@@ -48,7 +48,7 @@ const FloatingDockDesktop = ({ className, visibleItems = {} }) => {
     {
       key: "docs",
       title: "Documentation",
-      icon: <FileText />,
+      icon: <FileText />,       
       path: "/documentation",
       isExternal: false,
     },

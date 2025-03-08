@@ -6,6 +6,7 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import { HoverEffect } from "./components/project-page/projects";
 import DocumentationPage from "./components/documentation";
+import Editor from "./components/Editor";
 
 import { Developers } from "./components/Developers";
 
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/projects" element={<HoverEffect />} />
           <Route path="/documentation" element={<DocumentationPage />} />
+          <Route path="/editor" element={<Editor/>} />
           {/* <Route path="/about" element={<About />} />
         <Route path="*" element={<NotFound />} />  */}
         </Routes>
