@@ -1,246 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { TbUsers, TbUsersPlus, TbSend, TbMenu2, TbX } from "react-icons/tb";
+import { TbUsers, TbUsersPlus, TbSend, TbX } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
+import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
+import TracingBeam from "../components/TracingBeam.jsx";
 
 // Utility function for class name merging
 const cn = (...classes) => {
   return classes.filter(Boolean).join(" ");
-};
-
-// PlaceholdersAndVanishInput Component
-const PlaceholdersAndVanishInput = ({ placeholders, onChange, onSubmit }) => {
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [value, setValue] = useState("");
-  const [animating, setAnimating] = useState(false);
-
-  const intervalRef = React.useRef(null);
-  const canvasRef = React.useRef(null);
-  const newDataRef = React.useRef([]);
-  const inputRef = React.useRef(null);
-
-  const startAnimation = () => {
-    intervalRef.current = setInterval(() => {
-      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
-    }, 3000);
-  };
-
-  const handleVisibilityChange = () => {
-    if (document.visibilityState !== "visible" && intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    } else if (document.visibilityState === "visible") {
-      startAnimation();
-    }
-  };
-
-  useEffect(() => {
-    startAnimation();
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [placeholders]);
-
-  const draw = React.useCallback(() => {
-    if (!inputRef.current) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = 800;
-    canvas.height = 800;
-    ctx.clearRect(0, 0, 800, 800);
-    const computedStyles = getComputedStyle(inputRef.current);
-
-    const fontSize = parseFloat(computedStyles.getPropertyValue("font-size"));
-    ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
-    ctx.fillStyle = "#FFF";
-    ctx.fillText(value, 16, 40);
-
-    const imageData = ctx.getImageData(0, 0, 800, 800);
-    const pixelData = imageData.data;
-    const newData = [];
-
-    for (let t = 0; t < 800; t++) {
-      let i = 4 * t * 800;
-      for (let n = 0; n < 800; n++) {
-        let e = i + 4 * n;
-        if (
-          pixelData[e] !== 0 &&
-          pixelData[e + 1] !== 0 &&
-          pixelData[e + 2] !== 0
-        ) {
-          newData.push({
-            x: n,
-            y: t,
-            color: [
-              pixelData[e],
-              pixelData[e + 1],
-              pixelData[e + 2],
-              pixelData[e + 3],
-            ],
-          });
-        }
-      }
-    }
-
-    newDataRef.current = newData.map(({ x, y, color }) => ({
-      x,
-      y,
-      r: 1,
-      color: `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`,
-    }));
-  }, [value]);
-
-  useEffect(() => {
-    draw();
-  }, [value, draw]);
-
-  const animate = (start) => {
-    const animateFrame = (pos = 0) => {
-      requestAnimationFrame(() => {
-        const newArr = [];
-        for (let i = 0; i < newDataRef.current.length; i++) {
-          const current = newDataRef.current[i];
-          if (current.x < pos) {
-            newArr.push(current);
-          } else {
-            if (current.r <= 0) {
-              current.r = 0;
-              continue;
-            }
-            current.x += Math.random() > 0.5 ? 1 : -1;
-            current.y += Math.random() > 0.5 ? 1 : -1;
-            current.r -= 0.05 * Math.random();
-            newArr.push(current);
-          }
-        }
-        newDataRef.current = newArr;
-        const ctx = canvasRef.current?.getContext("2d");
-        if (ctx) {
-          ctx.clearRect(pos, 0, 800, 800);
-          newDataRef.current.forEach((t) => {
-            const { x: n, y: i, r: s, color: color } = t;
-            if (n > pos) {
-              ctx.beginPath();
-              ctx.rect(n, i, s, s);
-              ctx.fillStyle = color;
-              ctx.strokeStyle = color;
-              ctx.stroke();
-            }
-          });
-        }
-        if (newDataRef.current.length > 0) {
-          animateFrame(pos - 8);
-        } else {
-          setValue("");
-          setAnimating(false);
-        }
-      });
-    };
-    animateFrame(start);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !animating) {
-      vanishAndSubmit();
-    }
-  };
-
-  const vanishAndSubmit = () => {
-    setAnimating(true);
-    draw();
-
-    const value = inputRef.current?.value || "";
-    if (value && inputRef.current) {
-      const maxX = newDataRef.current.reduce(
-        (prev, current) => (current.x > prev ? current.x : prev),
-        0
-      );
-      animate(maxX);
-      onSubmit && onSubmit(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    vanishAndSubmit();
-  };
-
-  return (
-    <form
-      className={cn(
-        "w-full relative bg-gray-800/50 h-12 rounded-full overflow-hidden shadow-lg transition duration-200",
-        value && "bg-gray-700/70"
-      )}
-      onSubmit={handleSubmit}
-    >
-      <canvas
-        className={cn(
-          "absolute pointer-events-none text-base transform scale-50 top-[20%] left-2 origin-top-left filter invert-0 pr-20",
-          !animating ? "opacity-0" : "opacity-100"
-        )}
-        ref={canvasRef}
-      />
-      <input
-        onChange={(e) => {
-          if (!animating) {
-            setValue(e.target.value);
-            onChange && onChange(e);
-          }
-        }}
-        onKeyDown={handleKeyDown}
-        ref={inputRef}
-        value={value}
-        type="text"
-        className={cn(
-          "w-full relative text-base z-50 border-none text-gray-100 bg-transparent h-full rounded-full focus:outline-none focus:ring-0 pl-4 pr-14 font-inter",
-          animating && "text-transparent"
-        )}
-      />
-      <button
-        disabled={!value}
-        type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-700 bg-cyan-600 disabled:opacity-50 transition duration-200 flex items-center justify-center"
-      >
-        <TbSend className="text-white h-4 w-4" />
-      </button>
-      <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
-        <AnimatePresence mode="wait">
-          {!value && (
-            <motion.p
-              initial={{
-                y: 5,
-                opacity: 0,
-              }}
-              key={`current-placeholder-${currentPlaceholder}`}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: -15,
-                opacity: 0,
-              }}
-              transition={{
-                duration: 0.3,
-                ease: "linear",
-              }}
-              className="text-gray-400 text-base font-inter pl-4 text-left w-[calc(100%-2rem)] truncate"
-            >
-              {placeholders[currentPlaceholder]}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-    </form>
-  );
 };
 
 // Sidebar Component
@@ -294,6 +61,7 @@ const Editor = () => {
   const location = useLocation();
   const projectData = location?.state?.projectdata || { name: "My Project" };
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [editorContent, setEditorContent] = useState("// Your code editor content will appear here");
 
   // Sample messages for demonstration
   const [messages, setMessages] = useState([
@@ -317,8 +85,19 @@ const Editor = () => {
     },
   ]);
 
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const handleSendMessage = (message) => {
     if (message.trim()) {
+      // Create only one new message (system response was causing duplication)
       const newMessage = {
         id: messages.length + 1,
         sender: "user",
@@ -329,6 +108,20 @@ const Editor = () => {
         }),
       };
       setMessages([...messages, newMessage]);
+      
+      // Optionally add a system response after a delay if needed
+      // setTimeout(() => {
+      //   const systemResponse = {
+      //     id: messages.length + 2,
+      //     sender: "system",
+      //     content: "Received your message!",
+      //     timestamp: new Date().toLocaleTimeString([], {
+      //       hour: "2-digit",
+      //       minute: "2-digit",
+      //     }),
+      //   };
+      //   setMessages(prevMessages => [...prevMessages, systemResponse]);
+      // }, 1000);
     }
   };
 
@@ -342,7 +135,7 @@ const Editor = () => {
 
   return (
     <div className="font-inter flex h-screen p-4 justify-center w-full bg-gradient-to-br from-[#021227] to-[#015780] select-none overflow-hidden">
-      {/* Left sidebar */}
+      {/* Left sidebar - Messages */}
       <div className="w-[26vw] text-gray-200 p-2 bg-gray-800/40 backdrop-blur-md h-full rounded-lg shadow-2xl overflow-hidden border border-gray-700/50 flex flex-col">
         <div className="bg-gray-800/70 flex justify-between items-center px-4 py-3 rounded-lg shadow-md">
           <span className="text-xl font-semibold text-cyan-50">
@@ -361,20 +154,23 @@ const Editor = () => {
           </span>
         </div>
 
-        {/* Messages container */}
-        <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
-          {messages.map((message) => (
-            <Message
-              key={message.id}
-              sender={message.sender}
-              content={message.content}
-              timestamp={message.timestamp}
-            />
-          ))}
+        {/* Messages container with TracingBeam */}
+        <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 custom-scrollbar">
+          <TracingBeam>
+            {messages.map((message) => (
+              <Message
+                key={message.id}
+                sender={message.sender}
+                content={message.content}
+                timestamp={message.timestamp}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </TracingBeam>
         </div>
 
-        {/* Input bar */}
-        <div className="bg-gray-800/50 p-3 rounded-lg">
+        {/* Input bar - Full width of the message box */}
+        <div className="bg-gray-800/50 p-3 rounded-lg w-full">
           <PlaceholdersAndVanishInput
             placeholders={placeholders}
             onSubmit={handleSendMessage}
@@ -421,12 +217,14 @@ const Editor = () => {
             </div>
           </div>
 
-          {/* Bottom panel */}
+          {/* Bottom panel - Editable */}
           <div className="w-full text-white p-5 rounded-lg h-[90%] bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-700/50 overflow-hidden">
-            <div className="h-full bg-gray-900/50 rounded-lg p-4 text-gray-300 overflow-auto">
-              <p className="font-mono">
-                // Your code editor content will appear here
-              </p>
+            <div className="h-full bg-gray-900/50 rounded-lg p-4 text-gray-300 overflow-auto custom-scrollbar">
+              <textarea 
+                className="w-full h-full bg-transparent font-mono resize-none focus:outline-none focus:ring-0 custom-scrollbar"
+                value={editorContent}
+                onChange={(e) => setEditorContent(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -461,6 +259,26 @@ const Editor = () => {
           )}
         </div>
       </Sidebar>
+
+      {/* Add custom scrollbar styles */}
+      <style jsx="true">{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(100, 116, 139, 0.5);
+          border-radius: 20px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(100, 116, 139, 0.8);
+        }
+      `}</style>
     </div>
   );
 };
