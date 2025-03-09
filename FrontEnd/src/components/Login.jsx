@@ -61,20 +61,44 @@ const Login = () => {
         
          const userDetails = {
           email: data.email,           
-          firstName: data.given_name,  
-          lastName: data.family_name,  
+          firstname: data.given_name,  
+          lastname: data.family_name,  
         };
         console.log(userDetails);
+        const { email, firstname, lastname } = userDetails;
         //backend token
+      axios
+          .post(
+            "/users/google-register",
+        { 
+          email,
+          firstname,
+          lastname,
+        },
+        { withCredentials: true } // Important for cookies
+      )
+      .then((res) => {
+        console.log("Backend Response:", res.data);
 
+        // Store token in localStorage (if needed)
+        localStorage.setItem("token", res.data.token);
+
+        // Set user state
+        setUser(res.data);
+
+        // Redirect user
         navigate("/");
+      })
+      .catch((err) => {
+        console.error("Error:", err.response?.data || err.message);
+      });
 
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     },
     onError: () => console.log("Login Failed"),
-    scope: "email profile", // Ensure correct scopes
+    scope: "email profile", 
   });
 
   return (
