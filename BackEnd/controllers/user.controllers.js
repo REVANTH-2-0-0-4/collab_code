@@ -46,6 +46,20 @@ export const logincontroller = async (req, res) => {
         }
     }
 }
+
+export const googlecontroller = async (req, res) => {
+    const { email, firstname, lastname } = req.body;
+    const response = await userservice.googleuser(email, firstname, lastname);
+    // console.log("gcontroller  "+response); // edbug
+    if (response.status === "error") {
+      return res.status(400).send(response.message);
+    }
+    const token = response.generateJWT();
+    res.cookie("token", token, { httpOnly: false });
+    res.status(201).json({ response, token });
+  }
+
+
 export const getallusers = async (req, res) => {
     try {
       const loggedin_user = req.user?.email;

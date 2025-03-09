@@ -29,9 +29,30 @@ export async function loginuser({ email, password }) {
         if (!isMatch) {
             throw new Error("Invalid credentials");
         }
-
         return user; 
+
     } catch (err) {
         return { status: "error", message: err.message };
+    }
+}
+
+export async function googleuser(email, firstname, lastname) {
+    try {
+    // console.log(email, firstname, lastname);
+        const user = await usermodel.findOne({ email });
+        if (user){
+            return user;
+        }
+        else{
+            const newuser = await usermodel.create({
+                firstname,
+                lastname,
+                email,
+                password:''
+            })
+            return newuser;
+        }
+    } catch (error) {
+        return { status: "error", message: error.message };
     }
 }

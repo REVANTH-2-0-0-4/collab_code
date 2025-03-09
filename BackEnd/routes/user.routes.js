@@ -32,6 +32,9 @@ userrouter.post("/login",
 
   usercontroller.logincontroller
 )
+userrouter.post("/google-register",
+  usercontroller.googlecontroller
+)
 userrouter.get("/allusers",authmiddleware.auth,usercontroller.getallusers);
 
 userrouter.get("/logout" , authmiddleware.auth, usercontroller.logoutcontroller);

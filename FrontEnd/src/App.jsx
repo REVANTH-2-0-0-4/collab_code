@@ -7,12 +7,15 @@ import Login from "./components/Login";
 import { HoverEffect } from "./components/project-page/projects";
 import DocumentationPage from "./components/documentation";
 import Editor from "./components/Editor";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import { Developers } from "./components/Developers";
 
 const App = () => {
 
   return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID} >
+      
     <Context>
       <Router>
         <Routes>
@@ -28,6 +31,8 @@ const App = () => {
         </Routes>
       </Router>
     </Context>
+    
+    </GoogleOAuthProvider>
 
   );
 };
