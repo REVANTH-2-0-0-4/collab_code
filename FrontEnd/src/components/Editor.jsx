@@ -4,6 +4,8 @@ import { TbUsers, TbUsersPlus, TbSend, TbX } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
 import TracingBeam from "../components/TracingBeam.jsx";
+import { useAspect } from "@react-three/drei";
+import axios from "../config/axios.js";
 
 // Utility function for class name merging
 const cn = (...classes) => {
@@ -62,7 +64,8 @@ const Editor = () => {
   const projectData = location?.state?.projectdata || { name: "My Project" };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editorContent, setEditorContent] = useState("// Your code editor content will appear here");
-
+  const [users,setusers]=useState([]);
+  console.log(projectData);
   // Sample messages for demonstration
   const [messages, setMessages] = useState([
     {
@@ -93,6 +96,12 @@ const Editor = () => {
 
   useEffect(() => {
     scrollToBottom();
+    axios.get('/users/allusers').then(res=>{
+      setusers(res.data);
+    }).catch(err=>{
+        console.log(err);
+    })
+
   }, [messages]);
 
   const handleSendMessage = (message) => {
@@ -236,20 +245,17 @@ const Editor = () => {
           Project Members
         </div>
         <div className="space-y-4">
-          {["Alex Johnson", "Maria Garcia", "Terry Smith", "Dana Lee"].map(
+          {projectData.users.map(
             (user, index) => (
               <div
                 key={index}
                 className="flex items-center gap-3 p-2 hover:bg-gray-700/50 rounded-md transition-colors"
               >
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold">
-                  {user
-                    .split(" ")
-                    .map((name) => name[0])
-                    .join("")}
+                  {user.firstname[0]}
                 </div>
                 <div>
-                  <div className="text-gray-200">{user}</div>
+                  <div className="text-gray-200">{user.firstname}</div>
                   <div className="text-xs text-gray-400">
                     {index === 0 ? "Online" : index === 1 ? "Away" : "Offline"}
                   </div>
