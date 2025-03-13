@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/Usercontext.jsx";
 
 import { useGoogleLogin } from "@react-oauth/google";
+import { Divide } from "lucide-react";
 
 
 const Login = () => {
@@ -66,7 +67,7 @@ const Login = () => {
         };
         console.log(userDetails);
         const { email, firstname, lastname } = userDetails;
-        //backend token
+        // backend token
       axios
           .post(
             "/users/google-register",
@@ -94,6 +95,7 @@ const Login = () => {
       });
 
       } catch (error) {
+        console.log("hi i am error");
         console.error("Error fetching user data:", error);
       }
     },

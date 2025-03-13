@@ -3,7 +3,8 @@ import PropTypes from "prop-types"; // Add this import
 
 export const UserContext = createContext();
 
-const Context = ({ children }) => {
+
+ const Context = ({ children }) => {
   // Destructure children from props
   const [user, setUser] = useState(null);
 
@@ -16,4 +17,5 @@ const Context = ({ children }) => {
 Context.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
 export default Context;
