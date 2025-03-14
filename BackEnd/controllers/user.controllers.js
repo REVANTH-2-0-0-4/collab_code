@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import * as userservice from "../services/user.services.js";
-
+import usermodel from '../db/models/user_model.js';
 export const createusercontroller = async (req, res) => {
     const errors = validationResult(req);
     console.log(errors);
@@ -27,6 +27,7 @@ export const createusercontroller = async (req, res) => {
 
 
 export const logincontroller = async (req, res) => {
+  console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -61,6 +62,7 @@ export const googlecontroller = async (req, res) => {
 
 
 export const getallusers = async (req, res) => {
+  console.log(req.user);
     try {
       const loggedin_user = req.user?.email;
       if (!loggedin_user) {
@@ -70,8 +72,8 @@ export const getallusers = async (req, res) => {
       if (!user) {
         return res.status(404).send("Logged-in user not found.");
       }
-      const response = await userservice.allusersexceptid(user._id); 
-  
+      const response = await userservice.allusersexceptid({user_id:user._id}); 
+      
       if (response.status === "error") {
         return res.status(400).send(response.message);
       }
@@ -111,6 +113,14 @@ export const allusersexceptid = async(userid) =>{
    
   }
 
+export const usersexceptinproject=async (req,res)=>{
+  let project_id= req.params.id;
+  let response= await userservice.allusersExceptInProjectid({project_id});
+  if(response.status=='error'){
+    res.json(response.message).status(401);
+  }
+  else return res.json(response.allusers).status(200);
+}
 export const logoutcontroller = async (req, res) => {
     try {
         const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);

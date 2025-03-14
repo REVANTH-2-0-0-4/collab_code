@@ -1,3 +1,4 @@
+import project_model from "../db/models/project_model.js";
 import usermodel from "../db/models/user_model.js";
 
 export async function createuser({ firstname , lastname,email, password, confirmpassword }) {
@@ -56,3 +57,40 @@ export async function googleuser(email, firstname, lastname) {
         return { status: "error", message: error.message };
     }
 }
+
+export const allusersexceptid = async ({ user_id }) => {
+    // console.log(user_id);
+    try {
+      const allusers = await usermodel.find({ _id: { $ne: user_id } });
+      return { status: "success", allusers };
+    } catch (error) {
+      return { status: "error", message: error.message };
+    }
+  };
+
+export const allusersExceptInProjectid = async ({ project_id }) => {
+    console.log(project_id);
+    try {
+    let project= await project_model.findOne({_id:project_id});
+    if(!project){
+        return { status: "error", message: error.message };
+    }
+      let allusers = await usermodel.find({});
+      let reqUsers= [];
+      allusers.map((user)=>{
+        let ff=false;
+        project.users.map((projectuser)=>{
+            if(projectuser.toString()==user._id.toString()){
+                ff=true;
+            }
+        })
+        if(!ff)reqUsers.push(user);
+      })
+    allusers=reqUsers;
+    // console.log(allusers,reqUsers);
+      return { status: "success", allusers };
+    } catch (error) {
+      return { status: "error", message: error.message };
+    }
+  };
+  
