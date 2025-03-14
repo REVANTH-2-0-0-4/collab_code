@@ -5,6 +5,7 @@ import userrouter from "./routes/user.routes.js";
 import projectroutes from "./routes/project.routes.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import chatrouter from "./routes/chat.routes.js"
 // import airoutes from "./routes/ai.routes.js"
 // import usermodel from "./db/models/user_model.js"
 import cors from "cors";
@@ -39,5 +40,6 @@ app.get("/users", (req, res) => {
 });
 app.use("/projects", projectroutes);
 app.use("/users", userrouter);
+app.use("/chats",chatrouter);
 // app.use("/ai", airoutes);
 export default app;

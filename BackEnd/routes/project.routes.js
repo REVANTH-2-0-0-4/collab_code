@@ -24,8 +24,6 @@ router.put(
     .withMessage("Every user ID should be a string"),
   projectcontroller.adduser
 );
-
-
 router.get(
   "/get-project/:id",
   authmiddleware.auth,
