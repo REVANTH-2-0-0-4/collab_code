@@ -80,13 +80,14 @@ export const allusersExceptInProjectid = async ({ project_id }) => {
       allusers.map((user)=>{
         let ff=false;
         project.users.map((projectuser)=>{
-            if(projectuser==user._id){
+            if(projectuser.toString()==user._id.toString()){
                 ff=true;
             }
         })
         if(!ff)reqUsers.push(user);
       })
     allusers=reqUsers;
+    // console.log(allusers,reqUsers);
       return { status: "success", allusers };
     } catch (error) {
       return { status: "error", message: error.message };

@@ -27,6 +27,7 @@ export const createusercontroller = async (req, res) => {
 
 
 export const logincontroller = async (req, res) => {
+  console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -115,7 +116,10 @@ export const allusersexceptid = async(userid) =>{
 export const usersexceptinproject=async (req,res)=>{
   let project_id= req.params.id;
   let response= await userservice.allusersExceptInProjectid({project_id});
-  return res.json(response).status(200);
+  if(response.status=='error'){
+    res.json(response.message).status(401);
+  }
+  else return res.json(response.allusers).status(200);
 }
 export const logoutcontroller = async (req, res) => {
     try {

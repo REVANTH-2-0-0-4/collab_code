@@ -61,6 +61,7 @@ export const adduser = async (req, res) => {
   try {
     const { users, projectid } = req.body;
     const loggedin_user = req.user.email;
+    console.log(loggedin_user);
     const user = await usermodel.findOne({ email: loggedin_user });
     const response = await projectservices.adduserstoproject(users, projectid, user._id);
     if (response.status === "error") {

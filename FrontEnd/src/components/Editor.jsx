@@ -6,7 +6,8 @@ import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
 import TracingBeam from "../components/TracingBeam.jsx";
 import { useAspect } from "@react-three/drei";
 import axios from "../config/axios.js";
-
+import UserSelectionModal from "./modals/UserSelectionModal.jsx";
+import { receiveMessage,sendMessage,initializeSocket } from "@/config/socket.js";
 // Utility function for class name merging
 const cn = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -22,7 +23,7 @@ const Sidebar = ({ open, setOpen, children }) => {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "-100%", opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="absolute left-0 top-0 h-full w-[300px] bg-gray-800/95 backdrop-blur-md z-30 shadow-xl rounded-r-lg overflow-hidden"
+          className="absolute left-0 top-0 h-full w-[400px] bg-gray-800/95 backdrop-blur-md z-30 shadow-xl rounded-r-lg "
         >
           <div className="flex justify-end p-4">
             <button
@@ -61,11 +62,12 @@ const Message = ({ sender, content, timestamp }) => {
 // Main Editor Component
 const Editor = () => {
   const location = useLocation();
-  const projectData = location?.state?.projectdata || { name: "My Project" };
+  const [projectData,setprojectData] = useState(location?.state?.projectdata || { name: "My Project" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editorContent, setEditorContent] = useState("// Your code editor content will appear here");
   const [users,setusers]=useState([]);
-  console.log(projectData);
+  let [selectedUsers,setSelectedUsers]=useState([]);
+  let [ismodalOpen,setismodalopen]=useState(false);
   // Sample messages for demonstration
   const [messages, setMessages] = useState([
     {
@@ -95,15 +97,37 @@ const Editor = () => {
   };
 
   useEffect(() => {
+    console.log("yes");
+    initializeSocket({projectId:projectData._id});
     scrollToBottom();
-    axios.get('/users/allusers').then(res=>{
+    axios.get(`/users/usersnotinproject/${projectData._id}`).then(res=>{
+      // console.log(res.data);
       setusers(res.data);
     }).catch(err=>{
         console.log(err);
     })
-
+    receiveMessage('project-message',data=>{
+      // console.log(data);
+      // appendMessage(data);
+  })
   }, [messages]);
-
+  const handleUserselection =()=>{
+    setismodalopen(false);
+    if(selectedUsers.length==0)return;
+    axios.put("/projects/add-user",{
+      projectid:projectData._id,
+      users:selectedUsers
+    }).then(()=>{
+      console.log("users added successfully");
+      axios.get(`/projects/get-project/${projectData._id}`).then(
+        (res)=>{
+          console.log(res.data);
+          setprojectData(res.data);
+        }
+      )
+      setSelectedUsers([]);
+    }).catch(err=>console.log(err));
+  }
   const handleSendMessage = (message) => {
     if (message.trim()) {
       // Create only one new message (system response was causing duplication)
@@ -157,12 +181,38 @@ const Editor = () => {
             >
               <TbUsers size={22} />
             </button>
-            <button className="text-cyan-300 hover:text-cyan-100 transition-colors">
+            <button 
+            onClick={()=>setismodalopen(true)}
+            className="text-cyan-300 hover:text-cyan-100 transition-colors">
               <TbUsersPlus size={22} />
             </button>
           </span>
+           <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+        <div className="text-xl font-semibold text-cyan-100 mb-6 border-b border-gray-700 pb-2">
+          Project Members
         </div>
-
+        <div className="space-y-4">
+          {projectData.users.map(
+            (user, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 p-2 hover:bg-gray-700/50 rounded-md transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                  {user.firstname[0]}
+                </div>
+                <div>
+                  <div className="text-gray-200">{user.firstname}</div>
+                  <div className="text-xs text-gray-400">
+                    {index === 0 ? "Online" : index === 1 ? "Away" : "Offline"}
+                  </div>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </Sidebar>
+        </div>
         {/* Messages container with TracingBeam */}
         <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 custom-scrollbar">
           <TracingBeam>
@@ -240,32 +290,14 @@ const Editor = () => {
       </div>
 
       {/* Users Sidebar */}
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <div className="text-xl font-semibold text-cyan-100 mb-6 border-b border-gray-700 pb-2">
-          Project Members
-        </div>
-        <div className="space-y-4">
-          {projectData.users.map(
-            (user, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 p-2 hover:bg-gray-700/50 rounded-md transition-colors"
-              >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold">
-                  {user.firstname[0]}
-                </div>
-                <div>
-                  <div className="text-gray-200">{user.firstname}</div>
-                  <div className="text-xs text-gray-400">
-                    {index === 0 ? "Online" : index === 1 ? "Away" : "Offline"}
-                  </div>
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      </Sidebar>
-
+     
+      <UserSelectionModal 
+          isOpen={ismodalOpen}
+          onClose={handleUserselection}
+          users={users}
+          selectedUsers={selectedUsers}
+          setSelectedUsers={setSelectedUsers}
+        />
       {/* Add custom scrollbar styles */}
       <style jsx="true">{`
         .custom-scrollbar::-webkit-scrollbar {

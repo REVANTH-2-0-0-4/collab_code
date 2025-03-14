@@ -40,13 +40,7 @@ const Signup = () => {
     console.log("Form submitted:", formData);
 
     axios
-      .post("/users/register", {
-        firstname,
-        lastname,
-        email,
-        password,
-        confirmpassword,
-      })
+      .post("/users/register", formData)
       .then((res) => {
         console.log(res.data);
         localStorage.setItem("token", res.data.token);
@@ -54,7 +48,7 @@ const Signup = () => {
         navigate("/");
       })
       .catch((err) => {
-        console.log(err.response.data);
+        console.log(err);
       });
   };
 

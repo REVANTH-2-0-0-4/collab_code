@@ -3,6 +3,8 @@ connect();
 import express from "express";
 import userrouter from "./routes/user.routes.js";
 import projectroutes from "./routes/project.routes.js";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
 // import airoutes from "./routes/ai.routes.js"
 // import usermodel from "./db/models/user_model.js"
 import cors from "cors";
@@ -11,10 +13,9 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
   })
 );
-import morgan from "morgan";
-import cookieParser from "cookie-parser";
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
@@ -35,10 +36,6 @@ app.get("/", (req, res) => {
 // User routes
 app.get("/users", (req, res) => {
   res.send(" hey from users route - CollabCode");
-});
-
-app.listen(3000, () => {
-  console.log("server is running on the port 3000");
 });
 app.use("/projects", projectroutes);
 app.use("/users", userrouter);
