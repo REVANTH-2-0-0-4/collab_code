@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef ,useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { TbUsers, TbUsersPlus, TbSend, TbX } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,7 @@ import { useAspect } from "@react-three/drei";
 import axios from "../config/axios.js";
 import UserSelectionModal from "./modals/UserSelectionModal.jsx";
 import { receiveMessage,sendMessage,initializeSocket } from "@/config/socket.js";
+import { UserContext } from "@/context/Usercontext.jsx";
 // Utility function for class name merging
 const cn = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -68,6 +69,8 @@ const Editor = () => {
   const [users,setusers]=useState([]);
   let [selectedUsers,setSelectedUsers]=useState([]);
   let [ismodalOpen,setismodalopen]=useState(false);
+  let [message,setmessage]=useState('');
+  let {user}= useContext(UserContext);
   // Sample messages for demonstration
   const [messages, setMessages] = useState([
     {
@@ -128,18 +131,18 @@ const Editor = () => {
       setSelectedUsers([]);
     }).catch(err=>console.log(err));
   }
-  const handleSendMessage = (message) => {
+  const handleSendMessage = () => {
     if (message.trim()) {
       // Create only one new message (system response was causing duplication)
       const newMessage = {
-        id: messages.length + 1,
-        sender: "user",
-        content: message,
+        project:projectData._id,
+        message: message,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
       };
+
       setMessages([...messages, newMessage]);
       
       // Optionally add a system response after a delay if needed
@@ -231,6 +234,8 @@ const Editor = () => {
         {/* Input bar - Full width of the message box */}
         <div className="bg-gray-800/50 p-3 rounded-lg w-full">
           <PlaceholdersAndVanishInput
+            value={message}
+            onChange={(e)=>setmessage(e.target.value)}
             placeholders={placeholders}
             onSubmit={handleSendMessage}
           />
