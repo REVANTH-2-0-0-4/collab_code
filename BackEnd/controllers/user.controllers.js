@@ -26,6 +26,16 @@ export const createusercontroller = async (req, res) => {
 }
 
 
+export const getuser =(req,res)=>{
+  if(!req.user){
+    return res.status(400).json({message:"invalid token"});
+  } 
+  else {
+    console.log(req.user);
+    return res.status(200).json({user:req.user});
+  }
+}
+
 export const logincontroller = async (req, res) => {
   console.log(req.body);
     const errors = validationResult(req);

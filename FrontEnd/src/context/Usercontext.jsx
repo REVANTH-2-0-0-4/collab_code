@@ -1,6 +1,6 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types"; // Add this import
-
+import axios from "@/config/axios";
 export const UserContext = createContext();
 
 
@@ -11,16 +11,13 @@ export const UserContext = createContext();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
+    console.log(token);
     if (token) {
-      // Attach token to axios headers (optional)
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      // Fetch user details from the backend
       axios
-        .get("/auth/me") // Replace with your endpoint to get user info
+        .get("users/auth/me") 
         .then((res) => {
-          setUser(res.data);
+          console.log("i am the data",res.data.user);
+          setUser(res.data.user);
         })
         .catch((err) => {
           console.error("Error fetching user:", err);
@@ -31,6 +28,9 @@ export const UserContext = createContext();
       setLoading(false);
     }
   }, []);
+  if (loading) {
+    return <div>Loading...</div>; // Prevent rendering until loading is done
+  }
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}
