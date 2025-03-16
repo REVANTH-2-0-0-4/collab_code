@@ -42,13 +42,13 @@ const Sidebar = ({ open, setOpen, children }) => {
 };
 
 // Message Component
-const Message = ({ sender, content, timestamp }) => {
+const Message = ({ sender, content, timestamp ,userEmail}) => {
   return (
-    <div className={`mb-3 ${sender === "user" ? "ml-auto" : ""} max-w-[80%]`}>
+    <div className={`mb-3 ${sender == userEmail ? "ml-auto" : ""} max-w-[80%]`}>
       <div
         className={cn(
           "p-3 rounded-lg shadow-md",
-          sender === "user"
+          sender == userEmail
             ? "bg-cyan-700/70 text-white"
             : "bg-gray-700/70 text-gray-200"
         )}
@@ -72,37 +72,25 @@ const Editor = () => {
   let [message,setmessage]=useState('');
   let {user}= useContext(UserContext);
   // Sample messages for demonstration
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "system",
-      content: "Welcome to the project chat!",
-      timestamp: "10:30 AM",
-    },
-    {
-      id: 2,
-      sender: "user",
-      content: "Thanks! I'm excited to get started.",
-      timestamp: "10:32 AM",
-    },
-    {
-      id: 3,
-      sender: "system",
-      content: "Let me know if you need any help.",
-      timestamp: "10:33 AM",
-    },
-  ]);
-
+  const [messages, setMessages] = useState([]);
+  console.log(user,"nene ra user");
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  const getchats=()=>{
+    axios.post("chats/get-chat",{
+      projectid:projectData._id
+    }).then((res)=>{
+      setMessages(res.data);
+    }).catch(err=>console.log(err));
+  }
   useEffect(() => {
-    console.log("yes");
+
     initializeSocket({projectId:projectData._id});
     scrollToBottom();
+    getchats();
     axios.get(`/users/usersnotinproject/${projectData._id}`).then(res=>{
       // console.log(res.data);
       setusers(res.data);
@@ -111,9 +99,14 @@ const Editor = () => {
     })
     receiveMessage('project-message',data=>{
       // console.log(data);
-      // appendMessage(data);
+    getchats();
   })
-  }, [messages]);
+  }, []);
+  useEffect(() => {
+    console.log("Messages updated, scrolling to bottom...");
+    scrollToBottom();
+  }, [messages]); // Runs when messages update
+  
   const handleUserselection =()=>{
     setismodalopen(false);
     if(selectedUsers.length==0)return;
@@ -142,9 +135,16 @@ const Editor = () => {
           minute: "2-digit",
         }),
       };
-
-      setMessages([...messages, newMessage]);
-      
+      sendMessage("project-message", newMessage);
+      axios.post("/chats/add-chat",newMessage).then((res)=>{
+        console.log(res);
+        axios.post("chats/get-chat",{
+          projectid:projectData._id
+        }).then((res)=>{
+          setMessages(res.data);
+        }).catch(err=>console.log(err));
+      }).catch(err=>console.log(err));
+      setmessage('');
       // Optionally add a system response after a delay if needed
       // setTimeout(() => {
       //   const systemResponse = {
@@ -221,10 +221,11 @@ const Editor = () => {
           <TracingBeam>
             {messages.map((message) => (
               <Message
-                key={message.id}
-                sender={message.sender}
-                content={message.content}
-                timestamp={message.timestamp}
+                key={message._id}
+                sender={message.email}
+                content={message.message}
+                timestamp={message.createdAt}
+                userEmail={user.email}
               />
             ))}
             <div ref={messagesEndRef} />
