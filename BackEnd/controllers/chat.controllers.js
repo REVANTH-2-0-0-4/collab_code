@@ -7,7 +7,8 @@ export const addChatToProjectid= async (req,res)=>{
     // if(!errors.isEmpty()){
     //     return res.status(400).json({errors});
     // }
-    let {projectid,message}= req.body;
+    let {message}= req.body;
+    let projectid= req.body.project;
     console.log(projectid);
     let loggedin_user= await usermodel.findOne({email:req.user.email});
     console.log(loggedin_user);
