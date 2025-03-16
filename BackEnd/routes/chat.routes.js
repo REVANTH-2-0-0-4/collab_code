@@ -20,7 +20,9 @@ router.post(
 //   .withMessage("Invalid project ID format"),
     chatController.addChatToProjectid
   );
-  
+
+router.delete("/:id",authmiddleware.auth,chatController.deleteMessage)
+
 router.post("/get-chat",authmiddleware.auth,chatController.getChatById);
 
 export default router;

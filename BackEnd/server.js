@@ -40,18 +40,18 @@ io.on('connection',socket=>{
         const message= data.message;
         io.to(socket.roomId).emit('project-message',data)
         const isAiPresent = message.includes('@ai');
-        // if(isAiPresent){
-        //     let res= await generateResult(data.message);
-        //     console.log(res);
-        //     io.to(socket.roomId).emit('project-message',{
-        //         message:res.toString(),
-        //         sender:{
-        //             _id:'3',
-        //             email:'AI'
-        //         }
-        //     })
-        //     return;
-        // }
+        if(isAiPresent){
+            let res= await generateResult(data.message);
+            console.log(res);
+            io.to(socket.roomId).emit('project-message',{
+                message:res.toString(),
+                sender:{
+                    _id:'3',
+                    email:'AI'
+                }
+            })
+            return;
+        }
     })
     socket.on('',()=>{});
     socket.on('disconnect',()=>{
