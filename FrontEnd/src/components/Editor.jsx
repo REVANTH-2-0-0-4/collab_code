@@ -42,23 +42,28 @@ const Sidebar = ({ open, setOpen, children }) => {
 };
 
 // Message Component
-const Message = ({ sender, content, timestamp ,userEmail}) => {
+const Message = ({ sender, content, timestamp, userEmail }) => {
   return (
-    <div className={`mb-3 ${sender == userEmail ? "ml-auto" : ""} max-w-[80%]`}>
+    <div className={`mb-2 flex ${sender === userEmail ? "justify-end" : "justify-start"}`}>
       <div
         className={cn(
-          "p-3 rounded-lg shadow-md",
-          sender == userEmail
-            ? "bg-cyan-700/70 text-white"
-            : "bg-gray-700/70 text-gray-200"
+          "relative px-4 py-2 rounded-lg shadow-md max-w-[75%] w-fit",
+          sender === userEmail
+            ? "bg-cyan-700/70 text-white self-end"
+            : "bg-gray-700/70 text-gray-200 self-start"
         )}
       >
-        <p className="text-sm font-inter">{content}</p>
+        <small className="text-[10px] block text-emerald-400">{sender}</small>
+        <p className="text-sm font-inter break-words mb-2">{content}</p>
+        <div className="absolute bottom-0 right-2  text-indigo-300 ">
+          <small className="text-[10px]">{timestamp.split(',')[1]}</small>
+        </div>
       </div>
-      <div className="text-xs text-gray-400 mt-1">{timestamp}</div>
     </div>
   );
 };
+
+
 
 // Main Editor Component
 const Editor = () => {
@@ -73,7 +78,7 @@ const Editor = () => {
   let {user}= useContext(UserContext);
   // Sample messages for demonstration
   const [messages, setMessages] = useState([]);
-  console.log(user,"nene ra user");
+  // console.log(user,"nene ra user");
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -98,7 +103,7 @@ const Editor = () => {
         console.log(err);
     })
     receiveMessage('project-message',data=>{
-      // console.log(data);
+      console.log(data);
     getchats();
   })
   }, []);
@@ -135,13 +140,13 @@ const Editor = () => {
           minute: "2-digit",
         }),
       };
-      sendMessage("project-message", newMessage);
       axios.post("/chats/add-chat",newMessage).then((res)=>{
         console.log(res);
         axios.post("chats/get-chat",{
           projectid:projectData._id
         }).then((res)=>{
           setMessages(res.data);
+          sendMessage("project-message", newMessage);
         }).catch(err=>console.log(err));
       }).catch(err=>console.log(err));
       setmessage('');
@@ -195,7 +200,7 @@ const Editor = () => {
           Project Members
         </div>
         <div className="space-y-4">
-          {projectData.users.map(
+          {projectData.users?.map(
             (user, index) => (
               <div
                 key={index}

@@ -34,7 +34,7 @@ export const getChatById= async(req,res)=>{
         if(response.status=='error'){
             return res.status(400).json({message:response.message});
         }
-        console.log(response);
+        // console.log(response);
         return res.json(response.chats).status(200);
     } catch (error) {
         return res.status(400).json({message:error.message});
