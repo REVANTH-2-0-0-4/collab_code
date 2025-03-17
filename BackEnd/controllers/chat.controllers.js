@@ -26,6 +26,21 @@ export const addChatToProjectid= async (req,res)=>{
     return res.status(200).json({message:response.message});
 }   
 
+export const editchat=async(req,res)=>{
+    let {id}= req.params;
+    let {message}= req.body;
+    console.log(id,message);
+    try {
+        let response =await chatServices.editMsg({id,userid:req.user.email,message});
+        if(response.status=="error"){
+            res.status(400).json({message:response.message});
+        }
+        res.status(200).json({message:"Message Has Been edited Successfully"});
+    } catch (error) {
+        res.status(400).json({message:error.message});
+    }
+}
+
 export const deleteMessage=async(req,res)=>{
     let {id}= req.params;
     try {

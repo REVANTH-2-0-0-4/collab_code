@@ -23,6 +23,8 @@ router.post(
 
 router.delete("/:id",authmiddleware.auth,chatController.deleteMessage)
 
+router.put("/:id",authmiddleware.auth,chatController.editchat)
+
 router.post("/get-chat",authmiddleware.auth,chatController.getChatById);
 
 export default router;

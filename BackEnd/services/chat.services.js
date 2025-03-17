@@ -17,9 +17,45 @@ export const addchat=async (newmessage)=>{
     }
 }
 
-
+export const editMsg = async ({ id, userid, message }) => {
+    console.log(id,userid,message);
+    try {
+      if (!id) {
+        throw new Error("Id should not be null");
+      }
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error("Invalid Mongoose ObjectId");
+      }
+  
+      let existingMessage = await Chat.findById(id);
+      if (!existingMessage) {
+        throw new Error("Message not found");
+      }
+  
+      if (existingMessage.email !== userid) {
+        throw new Error("User is not authorized to edit this message");
+      }
+  
+      let updatedMessage = await Chat.findByIdAndUpdate(
+        id,
+        { message }, 
+        { new: true }
+      );
+  
+      return {
+        message: "Updated Successfully",
+        status: "success",
+        updatedMessage,
+      };
+    } catch (err) {
+      return {
+        message: err.message,
+        status: "error",
+      };
+    }
+  };
+  
 export const deleteMsg=async({id,userid})=>{
-    console.log(id,userid);
     try{
         if(!id){
             throw new Error("Id should not be null");
