@@ -46,8 +46,8 @@ io.on('connection',socket=>{
             io.to(socket.roomId).emit('project-message',{
                 message:res.toString(),
                 sender:{
-                    _id:'3',
-                    email:'AI'
+                    _id:'67d7da39b9b904cb0ad30971',
+                    email:'AI@ai.com'
                 }
             })
             return;
