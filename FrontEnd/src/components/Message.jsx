@@ -1,119 +1,143 @@
 import React, { useState } from "react";
-const cn = (...classes) => {
-  return classes.filter(Boolean).join(" ");
+
+const cn = (...classes) => classes.filter(Boolean).join(" ");
+
+let onDelete = (id) => {
+  console.log("deleted", id);
+};
+let onEdit = (id, content) => {
+  console.log(id, content);
 };
 
 const Message = ({
-  message,         // full message object (for _id, etc.)
-  sender, 
-  content, 
-  timestamp, 
-  userEmail, 
-  onDelete, 
-  onEdit 
+  message,
+  sender,
+  content,
+  timestamp,
+  userEmail,
+  openMenuId,      // Global state: currently open message ID
+  setOpenMenuId,   // Global setter from parent
 }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
 
   const isSender = sender === userEmail;
+  const isMenuOpen = openMenuId === message._id; // Check if this message's dropdown is open
+
+  const handleMenuToggle = () => {
+    // Toggle this message's menu; close if it's already open.
+    setOpenMenuId(isMenuOpen ? null : message._id);
+  };
 
   const handleSaveEdit = () => {
     if (editedContent.trim()) {
       onEdit(message._id, editedContent);
       setIsEditing(false);
-      setMenuOpen(false);
+      setOpenMenuId(null);
     }
   };
 
   const handleCancelEdit = () => {
     setEditedContent(content);
     setIsEditing(false);
-    setMenuOpen(false);
+    setOpenMenuId(null);
   };
 
   return (
-    <div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"}`}>
+    <div className={`mb-2 flex ${isSender ? "justify-end" : "justify-start"} relative`}>
+      {/* Sender Messages: Dropdown shows Edit and Delete */}
+      {isSender && isMenuOpen && (
+        <div className="flex flex-col mr-2 bg-gray-800 p-2 rounded-md shadow-md text-white text-xs z-10">
+          {/* Edit / Save/Cancel buttons */}
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-2 py-1 hover:bg-gray-700 rounded"
+            >
+              Edit
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleSaveEdit}
+                className="px-2 py-1 hover:bg-gray-700 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="px-2 py-1 hover:bg-gray-700 rounded"
+              >
+                Cancel
+              </button>
+            </>
+          )}
+          {/* Delete button (for sender) */}
+          <button
+            onClick={() => {
+              onDelete(message._id);
+              setOpenMenuId(null);
+            }}
+            className="px-2 py-1 hover:bg-gray-700 rounded text-red-300"
+          >
+            Delete
+          </button>
+        </div>
+      )}
+
+      {/* Message Container */}
       <div
         className={cn(
           "relative px-4 py-2 rounded-lg shadow-md max-w-[75%] w-fit group",
-          isSender
-            ? "bg-cyan-700/70 text-white self-end"
-            : "bg-gray-700/70 text-gray-200 self-start"
+          isSender ? "bg-cyan-700/70 text-white" : "bg-gray-700/70 text-gray-200"
         )}
+        style={{ minWidth: "100px" }} // Prevents size change when editing
       >
-        {/* Sender's name */}
-        <small className="text-[10px] block text-emerald-400">{sender}</small>
+        {/* Sender's Name */}
+        <small className="text-[10px] block text-emerald-400 mr-4">{sender}</small>
 
-        {/* If editing, show textarea; otherwise show message content */}
+        {/* Message Content / Edit Mode */}
         {isEditing ? (
           <textarea
-            className="text-sm font-inter break-words mb-2 w-full bg-transparent text-white"
+            className="text-sm font-inter break-words mb-2 w-full bg-transparent text-white border border-gray-400 rounded px-2 py-1 resize-none"
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
+            style={{ height: "auto", minHeight: "40px" }} // Keeps original height
           />
         ) : (
           <p className="text-sm font-inter break-words mb-2">{content}</p>
         )}
 
-        {/* Timestamp at bottom-right */}
+        {/* Timestamp */}
         <div className="absolute bottom-0 right-2 text-indigo-300">
-          <small className="text-[10px]">
-            {timestamp?.split(",")[1]}
-          </small>
+          <small className="text-[10px]">{timestamp?.split(",")[1]}</small>
         </div>
 
-        {/* Down arrow button (always visible) */}
+        {/* Down Arrow Button (only visible on hover) */}
         <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="absolute top-1 right-1 text-gray-200 hover:text-gray-50"
+          onClick={handleMenuToggle}
+          className="m-0 absolute top-0 right-0 text-gray-200 hover:text-gray-50 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <i className="ri-arrow-down-double-line text-lg"></i>
+          <span className="text-3xl inline-block px-2  tracking-wider ">▾</span>
+
+
         </button>
-
-        {/* On arrow click, show Edit/Delete options */}
-        {menuOpen && (
-          <div
-            className={`absolute top-6 ${isSender ? "left-1" : "right-1"} bg-gray-800 text-white rounded-md shadow-md p-2 text-xs z-10`}
-          >
-            {/* If not editing, show Edit button */}
-            {!isEditing ? (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded"
-              >
-                Edit
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={handleSaveEdit}
-                  className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded"
-                >
-                  Cancel
-                </button>
-              </>
-            )}
-
-            {/* Delete button */}
-            <button
-              onClick={() => {
-                onDelete(message._id);
-                setMenuOpen(false);
-              }}
-              className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded text-red-300"
-            >
-              Delete
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Receiver Messages: Dropdown shows only Delete */}
+      {!isSender && isMenuOpen && (
+        <div className="flex flex-col ml-2 bg-gray-800 p-2 rounded-md shadow-md text-white text-xs z-10">
+          <button
+            onClick={() => {
+              onDelete(message._id);
+              setOpenMenuId(null);
+            }}
+            className="px-2 py-1 hover:bg-gray-700 rounded text-red-300"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 };

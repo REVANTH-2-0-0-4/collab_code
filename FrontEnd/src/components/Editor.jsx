@@ -56,6 +56,7 @@ const Editor = () => {
   let [ismodalOpen,setismodalopen]=useState(false);
   let [message,setmessage]=useState('');
   let {user}= useContext(UserContext);
+  const [openMenuId, setOpenMenuId] = useState(null);
   // Sample messages for demonstration
   const [messages, setMessages] = useState([]);
   // console.log(user,"nene ra user");
@@ -222,18 +223,19 @@ const Editor = () => {
         {/* Messages container with TracingBeam */}
         <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 custom-scrollbar">
           <TracingBeam>
-            {messages.map((msg) => (
-              <Message
+          {messages.map((msg) => (
+            <Message
               key={msg._id}
               message={msg}
               sender={msg.email}
               content={msg.message}
               timestamp={msg.createdAt}
               userEmail={user.email}
-              onDelete={handleDeleteMessage}
-              onEdit={handleEditMessage}
+              openMenuId={openMenuId}
+              setOpenMenuId={setOpenMenuId}
             />
-            ))}
+          ))}
+
             <div ref={messagesEndRef} />
           </TracingBeam>
         </div>
