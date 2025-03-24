@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
 const cn = (...classes) => classes.filter(Boolean).join(" ");
-let onDelete=(id)=>{
-  console.log("deleted");
-}
-let onEdit=(id,content)=>{
-  console.log(id,content);
-}
+
+let onDelete = (id) => {
+  console.log("deleted", id);
+};
+let onEdit = (id, content) => {
+  console.log(id, content);
+};
 
 const Message = ({
   message,
@@ -93,7 +94,7 @@ const Message = ({
         style={{ minWidth: "100px" }} // Prevents size change when editing
       >
         {/* Sender's Name */}
-        <small className="text-[10px] block text-emerald-400">{sender}</small>
+        <small className="text-[10px] block text-emerald-400 mr-4">{sender}</small>
 
         {/* Message Content / Edit Mode */}
         {isEditing ? (
@@ -112,12 +113,14 @@ const Message = ({
           <small className="text-[10px]">{timestamp?.split(",")[1]}</small>
         </div>
 
-        {/* Down Arrow Button (always at top right) */}
+        {/* Down Arrow Button (only visible on hover) */}
         <button
           onClick={handleMenuToggle}
-          className="absolute top-1 right-1 text-gray-200 hover:text-gray-50"
-        >hi
-          <i className="ri-arrow-down-s-line text-lg"></i>
+          className="m-0 absolute top-0 right-0 text-gray-200 hover:text-gray-50 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <span className="text-3xl inline-block px-2  tracking-wider ">▾</span>
+
+
         </button>
       </div>
 
