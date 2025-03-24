@@ -9,6 +9,7 @@ import axios from "../config/axios.js";
 import UserSelectionModal from "./modals/UserSelectionModal.jsx";
 import { receiveMessage,sendMessage,initializeSocket } from "@/config/socket.js";
 import { UserContext } from "@/context/Usercontext.jsx";
+import Message from "./Message.jsx";
 // Utility function for class name merging
 const cn = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -41,27 +42,6 @@ const Sidebar = ({ open, setOpen, children }) => {
   );
 };
 
-// Message Component
-const Message = ({ sender, content, timestamp, userEmail }) => {
-  return (
-    <div className={`mb-2 flex ${sender === userEmail ? "justify-end" : "justify-start"}`}>
-      <div
-        className={cn(
-          "relative px-4 py-2 rounded-lg shadow-md max-w-[75%] w-fit",
-          sender === userEmail
-            ? "bg-cyan-700/70 text-white self-end"
-            : "bg-gray-700/70 text-gray-200 self-start"
-        )}
-      >
-        <small className="text-[10px] block text-emerald-400">{sender}</small>
-        <p className="text-sm font-inter break-words mb-2">{content}</p>
-        <div className="absolute bottom-0 right-2  text-indigo-300 ">
-          <small className="text-[10px]">{timestamp.split(',')[1]}</small>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 
 
@@ -166,6 +146,24 @@ const Editor = () => {
     }
   };
 
+  const handleDeleteMessage = (messageId) => {
+    axios
+      .delete("/chats/delete-chat", { data: { messageId, projectid: projectData._id } })
+      .then(() => {
+        getchats(); 
+      })
+      .catch((err) => console.log(err));
+  };
+  
+  const handleEditMessage = (messageId, newContent) => {
+    axios
+      .put("/chats/edit-chat", { messageId, newContent, projectid: projectData._id })
+      .then(() => {
+        getchats();
+      })
+      .catch((err) => console.log(err));
+  };
+
   // Placeholder suggestions for the vanish input
   const placeholders = [
     "Type your message here...",
@@ -224,14 +222,17 @@ const Editor = () => {
         {/* Messages container with TracingBeam */}
         <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 custom-scrollbar">
           <TracingBeam>
-            {messages.map((message) => (
+            {messages.map((msg) => (
               <Message
-                key={message._id}
-                sender={message.email}
-                content={message.message}
-                timestamp={message.createdAt}
-                userEmail={user.email}
-              />
+              key={msg._id}
+              message={msg}
+              sender={msg.email}
+              content={msg.message}
+              timestamp={msg.createdAt}
+              userEmail={user.email}
+              onDelete={handleDeleteMessage}
+              onEdit={handleEditMessage}
+            />
             ))}
             <div ref={messagesEndRef} />
           </TracingBeam>

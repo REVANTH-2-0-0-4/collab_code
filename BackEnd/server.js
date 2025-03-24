@@ -4,7 +4,8 @@ import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose';
 import project_model from './db/models/project_model.js';
-// import { generateResult } from './services/ai.service.js';
+import Chat from './db/models/chat_model.js';
+import { generateResult } from './services/ai.services.js';
 const PORT=process.env.PORT || 3000;
 const server=http.createServer(app);
 const io= new Server(server,{cors: {
@@ -41,8 +42,16 @@ io.on('connection',socket=>{
         io.to(socket.roomId).emit('project-message',data)
         const isAiPresent = message.includes('@ai');
         if(isAiPresent){
+            console.log("yes ai is present");
             let res= await generateResult(data.message);
             console.log(res);
+            let newmessage={
+                email:'AI@ai.com',
+                sender:'67d7da39b9b904cb0ad30971',
+                project:socket.roomId,
+                message:res,
+            }
+            await Chat.create(newmessage);
             io.to(socket.roomId).emit('project-message',{
                 message:res.toString(),
                 sender:{
