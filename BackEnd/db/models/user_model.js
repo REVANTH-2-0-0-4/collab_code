@@ -33,7 +33,7 @@ userschema.methods.isvalidpassword = async function (password) {
 }
 userschema.methods.generateJWT = function () {
     return jwt.sign({ email: this.email }, process.env.JWT_SECRET, {
-        expiresIn : '24h'
+        // expiresIn : '24h'
     });
 }
 
