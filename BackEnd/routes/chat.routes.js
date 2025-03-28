@@ -21,9 +21,9 @@ router.post(
     chatController.addChatToProjectid
   );
 
-router.delete("/:id",authmiddleware.auth,chatController.deleteMessage)
+router.delete("/delete-chat",authmiddleware.auth,chatController.deleteMessage)
 
-router.put("/:id",authmiddleware.auth,chatController.editchat)
+router.put("/edit-chat",authmiddleware.auth,chatController.editchat)
 
 router.post("/get-chat",authmiddleware.auth,chatController.getChatById);
 

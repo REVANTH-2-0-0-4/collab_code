@@ -27,8 +27,7 @@ export const addChatToProjectid= async (req,res)=>{
 }   
 
 export const editchat=async(req,res)=>{
-    let {id}= req.params;
-    let {message}= req.body;
+    let {message,id}= req.body;
     console.log(id,message);
     try {
         let response =await chatServices.editMsg({id,userid:req.user.email,message});
@@ -42,7 +41,8 @@ export const editchat=async(req,res)=>{
 }
 
 export const deleteMessage=async(req,res)=>{
-    let {id}= req.params;
+    let {id}= req.body;
+    console.log(id,req.user.email);
     try {
         let response =await chatServices.deleteMsg({id,userid:req.user.email});
         if(response.status=="error"){
