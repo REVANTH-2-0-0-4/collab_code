@@ -200,19 +200,6 @@ const Message = ({
               >
                 <FiCopy className="mr-2" /> Copy
               </button>
-              <button
-                onClick={() => {
-                  onDelete(message._id);
-                  setShowContextMenu(false);
-                }}
-                className="
-                  flex items-center w-full px-4 py-2 
-                  hover:bg-gray-700 rounded
-                  text-red-300
-                "
-              >
-                <FiTrash2 className="mr-2" /> Delete
-              </button>
             </>
           )}
         </div>

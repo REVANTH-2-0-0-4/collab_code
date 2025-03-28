@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Chat from "../db/models/chat_model.js";
+import user from "../db/models/user_model.js";
 
 export const addchat=async (newmessage)=>{
     try{
@@ -56,6 +57,7 @@ export const editMsg = async ({ id, userid, message }) => {
   };
   
 export const deleteMsg=async({id,userid})=>{
+    // console.log(id,userid);
     try{
         if(!id){
             throw new Error("Id should not be null");

@@ -149,7 +149,7 @@ const Editor = () => {
 
   const handleDeleteMessage = (messageId) => {
     axios
-      .delete("/chats/delete-chat", { data: { messageId, projectid: projectData._id } })
+      .delete("/chats/delete-chat", { data: {id:messageId} })
       .then(() => {
         getchats(); 
       })
@@ -158,7 +158,7 @@ const Editor = () => {
   
   const handleEditMessage = (messageId, newContent) => {
     axios
-      .put("/chats/edit-chat", { messageId, newContent, projectid: projectData._id })
+      .put("/chats/edit-chat", { id:messageId, message:newContent})
       .then(() => {
         getchats();
       })
@@ -233,6 +233,8 @@ const Editor = () => {
               userEmail={user.email}
               openMenuId={openMenuId}
               setOpenMenuId={setOpenMenuId}
+              onDelete={handleDeleteMessage}
+              onEdit={handleEditMessage}
             />
           ))}
 
