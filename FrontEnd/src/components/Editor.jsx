@@ -6,6 +6,7 @@ import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
 import TracingBeam from "../components/TracingBeam.jsx";
 import axios from "../config/axios.js";
 import UserSelectionModal from "./modals/UserSelectionModal.jsx";
+import GitModal from "../modals/GitModal.jsx"; // Import Git modal component
 import { receiveMessage, sendMessage, initializeSocket } from "@/config/socket.js";
 import { UserContext } from "@/context/Usercontext.jsx";
 import Message from "./Message.jsx";
@@ -52,6 +53,9 @@ const Editor = () => {
   const [fileTree, setFileTree] = useState({}); // Will be updated from Gemini response
   const [openFiles, setOpenFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState(null);
+
+  // --- Git Modal State ---
+  const [isGitModalOpen, setIsGitModalOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -151,31 +155,19 @@ const Editor = () => {
 
   const handleDeleteMessage = (messageId) => {
     axios
-<<<<<<< Updated upstream
-      .delete("/chats/delete-chat", { data: {id:messageId} })
+      .delete("/chats/delete-chat", { data: { id: messageId } })
       .then(() => {
-        getchats(); 
+        getChats();
       })
-      .catch((err) => console.log(err));
-  };
-  
-  const handleEditMessage = (messageId, newContent) => {
-    axios
-      .put("/chats/edit-chat", { id:messageId, message:newContent})
-      .then(() => {
-        getchats();
-      })
-=======
-      .delete("/chats/delete-chat", { data: { messageId, projectid: projectData._id } })
-      .then(() => getChats())
->>>>>>> Stashed changes
       .catch((err) => console.log(err));
   };
 
   const handleEditMessage = (messageId, newContent) => {
     axios
-      .put("/chats/edit-chat", { messageId, newContent, projectid: projectData._id })
-      .then(() => getChats())
+      .put("/chats/edit-chat", { id: messageId, message: newContent })
+      .then(() => {
+        getChats();
+      })
       .catch((err) => console.log(err));
   };
 
@@ -207,9 +199,7 @@ const Editor = () => {
         setFileTree((prevTree) => ({
           ...prevTree,
           [currentFile]: {
-            file: {
-              contents: updatedContent,
-            },
+            file: { contents: updatedContent },
           },
         }));
       }
@@ -262,36 +252,20 @@ const Editor = () => {
         {/* Chat Messages Container */}
         <div className="flex-1 my-2 p-3 overflow-y-auto space-y-4 custom-scrollbar">
           <TracingBeam>
-<<<<<<< Updated upstream
-          {messages.map((msg) => (
-            <Message
-              key={msg._id}
-              message={msg}
-              sender={msg.email}
-              content={msg.message}
-              timestamp={msg.createdAt}
-              userEmail={user.email}
-              openMenuId={openMenuId}
-              setOpenMenuId={setOpenMenuId}
-              onDelete={handleDeleteMessage}
-              onEdit={handleEditMessage}
-            />
-          ))}
-
-=======
-            {messages.map((msg, index) => (
+            {messages.map((msg) => (
               <Message
-                key={index}
+                key={msg._id}
                 message={msg}
                 sender={msg.email}
                 content={msg.message}
-                timestamp={msg.createdAt || msg.timestamp}
+                timestamp={msg.createdAt}
                 userEmail={user.email}
                 openMenuId={openMenuId}
                 setOpenMenuId={setOpenMenuId}
+                onDelete={handleDeleteMessage}
+                onEdit={handleEditMessage}
               />
             ))}
->>>>>>> Stashed changes
             <div ref={messagesEndRef} />
           </TracingBeam>
         </div>
@@ -328,15 +302,18 @@ const Editor = () => {
 
         {/* Main Editor Space */}
         <div className="w-[82%] ml-2 h-full rounded-lg flex flex-col gap-2">
-          {/* Top Panel */}
+          {/* Top Panel with Git Button */}
           <div className="w-full text-white p-4 rounded-lg h-[10%] bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-700/50 flex items-center justify-between">
             <div className="text-lg font-semibold text-cyan-100">Editor View</div>
             <div className="flex space-x-4">
-              <button className="px-3 py-1 bg-cyan-600/80 hover:bg-cyan-500 text-white rounded-md transition-colors shadow-md">
-                Save
-              </button>
-              <button className="px-3 py-1 bg-gray-700/80 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md">
-                Preview
+              <button className="px-3 py-1 bg-cyan-600/80 hover:bg-cyan-500 text-white rounded-md transition-colors shadow-md">Save</button>
+              <button className="px-3 py-1 bg-gray-700/80 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md">Preview</button>
+              {/* Git Button to toggle Git Modal */}
+              <button
+                onClick={() => setIsGitModalOpen(true)}
+                className="px-3 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded-md transition-colors shadow-md"
+              >
+                Git
               </button>
             </div>
           </div>
@@ -385,6 +362,14 @@ const Editor = () => {
         users={users}
         selectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
+      />
+
+      {/* Git Modal */}
+      <GitModal
+        isOpen={isGitModalOpen}
+        onClose={() => setIsGitModalOpen(false)}
+        projectName={projectData.name}
+        user={user}
       />
 
       {/* Custom Scrollbar Styles */}

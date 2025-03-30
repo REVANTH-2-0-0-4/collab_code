@@ -7,6 +7,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import chatrouter from "./routes/chat.routes.js"
 import aiRoutes from './routes/ai.routes.js'
+import gitRoutes from "./routes/gitRoutes.js";
 // import airoutes from "./routes/ai.routes.js"
 // import usermodel from "./db/models/user_model.js"
 import cors from "cors";
@@ -41,8 +42,10 @@ app.get("/users", (req, res) => {
 });
 app.use("/projects", projectroutes);
 app.use("/users", userrouter);
-app.use("/chats",chatrouter);
-app.use("/ai",aiRoutes)
+app.use("/chats", chatrouter);
+app.use("/ai", aiRoutes);
+
+app.use("/git", gitRoutes);
 
 // app.use("/ai", airoutes);
 export default app;
