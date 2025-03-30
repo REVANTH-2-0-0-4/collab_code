@@ -137,11 +137,16 @@ export const getLogs = async (req, res) => {
 
 /**
  * Pushes changes from the local repository to the remote repository.
- * Expects remoteUrl, githubUsername, and githubToken for authentication.
+ * Expects remoteUrl in the request body.
+ * Uses GitHub credentials from the request body or falls back to environment variables.
  */
 export const pushChanges = async (req, res) => {
   try {
     const { projectName, remoteUrl, githubUsername, githubToken } = req.body;
+    // Use provided credentials or fallback to environment variables.
+    const username = githubUsername || process.env.GITHUB_USERNAME;
+    const token = githubToken || process.env.GITHUB_TOKEN;
+
     const projectPath = path.join(__dirname, "../../projects", projectName);
 
     // Check if project directory exists
@@ -168,7 +173,7 @@ export const pushChanges = async (req, res) => {
       {
         callbacks: {
           credentials: () => {
-            return nodegit.Cred.userpassPlaintextNew(githubUsername, githubToken);
+            return nodegit.Cred.userpassPlaintextNew(username, token);
           }
         }
       }
