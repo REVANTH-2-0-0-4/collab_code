@@ -19,7 +19,7 @@ export const addchat=async (newmessage)=>{
 }
 
 export const editMsg = async ({ id, userid, message }) => {
-    console.log(id,userid,message);
+    // console.log(id,userid,message);
     try {
       if (!id) {
         throw new Error("Id should not be null");

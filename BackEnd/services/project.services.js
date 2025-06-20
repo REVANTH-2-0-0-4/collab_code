@@ -81,9 +81,9 @@ export const adduserstoproject = async (users, projectid, userid) => {
       _id: projectid,
       users: userid,
     });
-    console.log("project id :", projectid);
-    console.log("user id  :", userid);
-    console.log("project :", project);
+    // console.log("project id :", projectid);
+    // console.log("user id  :", userid);
+    // console.log("project :", project);
 
     if (!project) {
       throw new Error("You are not in the project to add others");

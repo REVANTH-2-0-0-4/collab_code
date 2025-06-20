@@ -7,11 +7,20 @@ import project_model from './db/models/project_model.js';
 import Chat from './db/models/chat_model.js';
 import { generateResult } from './services/ai.services.js';
 const PORT=process.env.PORT || 3000;
+// to create the socket server we need the raw http server not the express app
+// so we create a server using http.createServer and pass the express app to it
+// then we create a socket server using the raw http server and pass the express
 const server=http.createServer(app);
 const io= new Server(server,{cors: {
         origin: '*'
     }});
+// what is this use function doing?
+// it is a middleware function that runs before the connection event
+// it is used to authenticate the user and get the project id from the socket handshake
+// if the user is not authenticated or the project id is not valid, it will throw an error
+// otherwise it will attach the user and project to the socket object
 
+ // wen will this happen ? // when the user connects to the socket server
 io.use(async (socket,next)=>{
     try {
         let token= socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(' ')[1];
@@ -34,17 +43,20 @@ io.use(async (socket,next)=>{
     }
 })
 io.on('connection',socket=>{
-    console.log("a user connected");
+    // console.log("a user connected");
     socket.roomId= socket.project._id.toString();
     socket.join(socket.roomId);
+    // an event is listened from frontend
+    // when a user sends a message in the project chat
+    // we will emit the message to all the users in the project room
     socket.on('project-message',async (data)=>{
         const message= data.message;
-        io.to(socket.roomId).emit('project-message',data)
+        io.to(socket.roomId).emit('project-message',data);
         const isAiPresent = message.includes('@ai');
         if(isAiPresent){
-            console.log("yes ai is present");
+            // console.log("yes ai is present");
             let res= await generateResult(data.message);
-            console.log(res);
+            // console.log(res);
             let newmessage={
                 email:'AI@ai.com',
                 sender:'67d7da39b9b904cb0ad30971',
@@ -62,7 +74,7 @@ io.on('connection',socket=>{
             return;
         }
     })
-    socket.on('',()=>{});
+    // socket.on('',()=>{});
     socket.on('disconnect',()=>{
         console.log("User disconnected");
         socket.leave(socket.roomId);

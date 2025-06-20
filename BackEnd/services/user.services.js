@@ -49,7 +49,7 @@ export async function googleuser(email, firstname, lastname) {
                 firstname,
                 lastname,
                 email,
-                password:''
+                password:'googleuser'
             })
             return newuser;
         }

@@ -1,31 +1,6 @@
 import { validationResult } from "express-validator";
 import * as userservice from "../services/user.services.js";
 import usermodel from '../db/models/user_model.js';
-export const createusercontroller = async (req, res) => {
-    const errors = validationResult(req);
-    console.log(errors);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    else {
-        try {
-            console.log(req.body);
-            const user = await userservice.createuser(req.body);
-            const token = user.generateJWT();
-            delete user._doc.password;
-
-            res.cookie("token", token, { httpOnly: false });
-
-            res.status(201).json({ user, token });
-             
-        }
-        catch (err) {
-            res.status(400).send(err.message);
-        }
-    }
-}
-
-
 export const getuser =(req,res)=>{
   if(!req.user){
     return res.status(400).json({message:"invalid token"});
@@ -57,6 +32,31 @@ export const logincontroller = async (req, res) => {
         }
     }
 }
+export const createusercontroller = async (req, res) => {
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    else {
+        try {
+            // console.log(req.body);
+            const user = await userservice.createuser(req.body);
+            const token = user.generateJWT();
+            delete user._doc.password;
+
+            res.cookie("token", token, { httpOnly: false });
+
+            res.status(201).json({ user, token });
+             
+        }
+        catch (err) {
+            res.status(400).send(err.message);
+        }
+    }
+}
+
+
 
 export const googlecontroller = async (req, res) => {
     const { email, firstname, lastname } = req.body;
@@ -66,6 +66,7 @@ export const googlecontroller = async (req, res) => {
       return res.status(400).send(response.message);
     }
     const token = response.generateJWT();
+    delete response._doc.password;
     res.cookie("token", token, { httpOnly: false });
     res.status(201).json({ response, token });
   }

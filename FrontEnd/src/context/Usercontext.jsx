@@ -16,7 +16,7 @@ export const UserContext = createContext();
       axios
         .get("users/auth/me") 
         .then((res) => {
-          console.log("i am the data",res.data.user);
+          // console.log("i am the data",res.data.user);
           setUser(res.data.user);
         })
         .catch((err) => {

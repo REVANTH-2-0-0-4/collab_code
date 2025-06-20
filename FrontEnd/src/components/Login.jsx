@@ -48,7 +48,7 @@ const Login = () => {
 
   const handleGoogleSignIn = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log(tokenResponse)
+      console.log("google response token(line  51) : " ,tokenResponse);
       console.log("Access Token:", tokenResponse.access_token);
 
       // Fetch user info from Google API
@@ -95,7 +95,7 @@ const Login = () => {
       });
 
       } catch (error) {
-        console.log("hi i am error");
+        // console.log("hi i am error");
         console.error("Error fetching user data:", error);
       }
     },

@@ -36,10 +36,7 @@ userrouter.post("/google-register",
   usercontroller.googlecontroller
 )
 userrouter.get("/allusers",authmiddleware.auth,usercontroller.getallusers);
-
 userrouter.get("/logout" , authmiddleware.auth, usercontroller.logoutcontroller);
-
 userrouter.get("/auth/me",authmiddleware.auth,usercontroller.getuser);
-
 userrouter.get("/usersnotinproject/:id",authmiddleware.auth,usercontroller.usersexceptinproject)
 export default userrouter;
