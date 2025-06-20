@@ -91,7 +91,7 @@ const Signup = () => {
         localStorage.setItem("token", res.data.token);
 
         // Set user state
-        setUser(res.data);
+        setUser(res.data.response);
 
         // Redirect user
         navigate("/");
