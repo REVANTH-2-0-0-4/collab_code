@@ -6,7 +6,6 @@ import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
 import TracingBeam from "../components/TracingBeam.jsx";
 import axios from "../config/axios.js";
 import UserSelectionModal from "./modals/UserSelectionModal.jsx";
-import GitModal from "../modals/GitModal.jsx"; // Import Git modal component
 import { receiveMessage, sendMessage, initializeSocket } from "@/config/socket.js";
 import { UserContext } from "@/context/Usercontext.jsx";
 import Message from "./Message.jsx";
@@ -54,9 +53,6 @@ const Editor = () => {
   const [openFiles, setOpenFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState(null);
 
-  // --- Git Modal State ---
-  const [isGitModalOpen, setIsGitModalOpen] = useState(false);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -68,15 +64,20 @@ const Editor = () => {
       .catch((err) => console.log(err));
   };
 
+  // Function to fetch users not in project
+  const fetchUsersNotInProject = useCallback(() => {
+    axios
+      .get(`/users/usersnotinproject/${projectData._id}`)
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.log(err));
+  }, [projectData._id]);
+
   // Initialize socket, load chats, and fetch users
   useEffect(() => {
     initializeSocket({ projectId: projectData._id });
     scrollToBottom();
     getChats();
-    axios
-      .get(`/users/usersnotinproject/${projectData._id}`)
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.log(err));
+    fetchUsersNotInProject(); // Use the new function
 
     // Receive messages from socket
     receiveMessage("project-message", (data) => {
@@ -104,7 +105,7 @@ const Editor = () => {
       }
       getChats();
     });
-  }, []);
+  }, [fetchUsersNotInProject]);
 
   useEffect(() => {
     scrollToBottom();
@@ -113,15 +114,22 @@ const Editor = () => {
   const handleUserSelection = () => {
     setIsModalOpen(false);
     if (selectedUsers.length === 0) return;
+    
     axios
       .put("/projects/add-user", {
         projectid: projectData._id,
         users: selectedUsers,
       })
       .then(() => {
+        // Update project data
         axios.get(`/projects/get-project/${projectData._id}`).then((res) => {
           setProjectData(res.data);
         });
+        
+        // Refresh the list of users not in project
+        fetchUsersNotInProject();
+        
+        // Clear selected users
         setSelectedUsers([]);
       })
       .catch((err) => console.log(err));
@@ -206,6 +214,25 @@ const Editor = () => {
     },
     [currentFile, fileTree]
   );
+
+  // Handle Run Code functionality
+  const handleRunCode = () => {
+    if (currentFile && fileTree[currentFile]) {
+      const code = fileTree[currentFile].file.contents;
+      console.log("Running code for file:", currentFile);
+      console.log("Code content:", code);
+      // Add your run logic here - could send to backend, execute, etc.
+      
+      // Example: You could send this to your backend to execute
+      // axios.post('/code/execute', { 
+      //   filename: currentFile, 
+      //   code: code,
+      //   projectId: projectData._id 
+      // })
+    } else {
+      console.log("No file selected to run");
+    }
+  };
   // --- End File Tree Functions ---
 
   const placeholders = [
@@ -289,7 +316,9 @@ const Editor = () => {
             Object.keys(fileTree).map((file, index) => (
               <div
                 key={index}
-                className="flex items-center space-x-2 text-gray-300 hover:bg-gray-600/50 p-2 rounded cursor-pointer"
+                className={`flex items-center space-x-2 text-gray-300 hover:bg-gray-600/50 p-2 rounded cursor-pointer transition-colors ${
+                  currentFile === file ? 'bg-cyan-600/30 text-cyan-200' : ''
+                }`}
                 onClick={() => handleFileSelect(file)}
               >
                 <span className="text-sm">{file}</span>
@@ -302,18 +331,15 @@ const Editor = () => {
 
         {/* Main Editor Space */}
         <div className="w-[82%] ml-2 h-full rounded-lg flex flex-col gap-2">
-          {/* Top Panel with Git Button */}
+          {/* Top Panel with Run Button */}
           <div className="w-full text-white p-4 rounded-lg h-[10%] bg-gray-800/40 backdrop-blur-md shadow-2xl border border-gray-700/50 flex items-center justify-between">
-            <div className="text-lg font-semibold text-cyan-100">Editor View</div>
+            <div className="text-lg font-semibold text-cyan-100">Code Editor</div>
             <div className="flex space-x-4">
-              <button className="px-3 py-1 bg-cyan-600/80 hover:bg-cyan-500 text-white rounded-md transition-colors shadow-md">Save</button>
-              <button className="px-3 py-1 bg-gray-700/80 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md">Preview</button>
-              {/* Git Button to toggle Git Modal */}
-              <button
-                onClick={() => setIsGitModalOpen(true)}
-                className="px-3 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded-md transition-colors shadow-md"
+              <button 
+                onClick={handleRunCode}
+                className="px-4 py-2 bg-green-600/80 hover:bg-green-500 text-white rounded-md transition-colors shadow-md font-medium"
               >
-                Git
+                Run
               </button>
             </div>
           </div>
@@ -323,9 +349,20 @@ const Editor = () => {
               {/* Open File Tabs */}
               <div className="flex space-x-2 mb-2">
                 {openFiles.map((file, index) => (
-                  <div key={index} className="flex items-center space-x-1 bg-gray-600/50 px-2 py-1 rounded text-sm">
+                  <div 
+                    key={index} 
+                    className={`flex items-center space-x-1 px-2 py-1 rounded text-sm cursor-pointer transition-colors ${
+                      currentFile === file 
+                        ? 'bg-cyan-600/50 text-cyan-100' 
+                        : 'bg-gray-600/50 hover:bg-gray-500/50'
+                    }`}
+                    onClick={() => setCurrentFile(file)}
+                  >
                     <span>{file}</span>
-                    <button onClick={() => handleDeleteFileTab(file)}>
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteFileTab(file);
+                    }}>
                       <TbX size={14} className="hover:text-red-400 cursor-pointer" />
                     </button>
                   </div>
@@ -334,19 +371,23 @@ const Editor = () => {
               {/* Editable Code Area */}
               <div className="flex-1 bg-gray-700/30 rounded-lg p-2 overflow-auto custom-scrollbar">
                 {currentFile ? (
-                  <pre>
+                  <pre className="w-full h-full">
                     <code
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={handleFileContentUpdate}
-                      className="font-mono"
+                      className="font-mono text-sm leading-relaxed block w-full h-full outline-none"
+                      style={{ whiteSpace: 'pre-wrap' }}
                     >
-                      {fileTree[currentFile]?.file?.contents}
+                      {fileTree[currentFile]?.file?.contents || '// Start coding here...'}
                     </code>
                   </pre>
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400">
-                    Select a file to view its contents
+                    <div className="text-center">
+                      <div className="text-lg mb-2">📁</div>
+                      <div>Select a file to view its contents</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -362,14 +403,6 @@ const Editor = () => {
         users={users}
         selectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
-      />
-
-      {/* Git Modal */}
-      <GitModal
-        isOpen={isGitModalOpen}
-        onClose={() => setIsGitModalOpen(false)}
-        projectName={projectData.name}
-        user={user}
       />
 
       {/* Custom Scrollbar Styles */}
