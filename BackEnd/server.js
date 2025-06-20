@@ -56,12 +56,17 @@ io.on('connection',socket=>{
         if(isAiPresent){
             // console.log("yes ai is present");
             let res= await generateResult(data.message);
+            const parsed = JSON.parse(res);
+            console.log("lets see the parsed message : ",parsed);
+            console.log("lets see the res message : ",res);
+            console.log("lets see the res message type : ",typeof res);
+            console.log("lets see the parsed message type : ",typeof parsed.text);
             // console.log(res);
             let newmessage={
                 email:'AI@ai.com',
                 sender:'67d7da39b9b904cb0ad30971',
                 project:socket.roomId,
-                message:res,
+                message:parsed.text,
             }
             await Chat.create(newmessage);
             io.to(socket.roomId).emit('project-message',{
