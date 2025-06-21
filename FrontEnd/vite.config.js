@@ -1,18 +1,26 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import path from "path"
+import coi from 'vite-plugin-coi'    // optional helper plugin
 
-
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-    tailwindcss()],
-    resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    coi(),          // injects the two headers + shim to make COI work in dev
+    react()
+  ],
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy':  'same-origin',
+      'Cross-Origin-Embedder-Policy':'require-corp'
+    }
   },
+  preview: {
+    headers: {
+      'Cross-Origin-Opener-Policy':  'same-origin',
+      'Cross-Origin-Embedder-Policy':'require-corp'
+    }
+  },
+  resolve: {
+    alias: { '@': path.resolve(__dirname, './src') }
+  }
 })

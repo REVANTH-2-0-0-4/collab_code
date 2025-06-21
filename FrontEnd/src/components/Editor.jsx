@@ -9,6 +9,7 @@ import UserSelectionModal from "./modals/UserSelectionModal.jsx";
 import { receiveMessage, sendMessage, initializeSocket } from "@/config/socket.js";
 import { UserContext } from "@/context/Usercontext.jsx";
 import Message from "./Message.jsx";
+import { getWebContainer } from "@/config/webcontainer.js"; 
 
 // Utility function for merging class names
 const cn = (...classes) => classes.filter(Boolean).join(" ");
@@ -47,6 +48,7 @@ const Editor = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const [webContainer, setWebContainer] = useState(null);
 
   // --- File Tree States ---
   const [fileTree, setFileTree] = useState({}); // Will be updated from Gemini response
@@ -75,6 +77,12 @@ const Editor = () => {
   // Initialize socket, load chats, and fetch users
   useEffect(() => {
     initializeSocket({ projectId: projectData._id });
+    if(!webContainer) {
+      getWebContainer().then(container => { 
+        setWebContainer(container);
+        console.log("WebContainer initialized:", container);
+      });
+    }
     scrollToBottom();
     getChats();
     fetchUsersNotInProject(); // Use the new function
@@ -85,7 +93,10 @@ const Editor = () => {
         // Parse Gemini response (expected to be a JSON string)
         const parsed = JSON.parse(data.message);
         // Update file tree if provided
+        webContainer?.mount(parsed.fileTree);
         if (parsed.fileTree) {
+          // console.log("Received file tree:", parsed);
+          // console.log("type of fileTree:", typeof parsed.fileTree);
           setFileTree(parsed.fileTree);
         }
         // Add only the text portion as a chat message
@@ -216,23 +227,21 @@ const Editor = () => {
   );
 
   // Handle Run Code functionality
-  const handleRunCode = () => {
-    if (currentFile && fileTree[currentFile]) {
-      const code = fileTree[currentFile].file.contents;
-      console.log("Running code for file:", currentFile);
-      console.log("Code content:", code);
-      // Add your run logic here - could send to backend, execute, etc.
-      
-      // Example: You could send this to your backend to execute
-      // axios.post('/code/execute', { 
-      //   filename: currentFile, 
-      //   code: code,
-      //   projectId: projectData._id 
-      // })
-    } else {
-      console.log("No file selected to run");
-    }
+  const handleRunCode = async () => {
+    console.log("Running code...");
+    const installprocess = await webContainer.spawn("npm", ["install"]);
+    installprocess.output.pipeTo(new WritableStream({
+      write: (chunk) => console.log(chunk)
+    }));
+    const runProcess = await webContainer.spawn("npm", ["start"]);
+    runProcess.output.pipeTo(new WritableStream({
+      write: (chunk) => console.log(chunk)
+    }));
+    
   };
+  
+
+
   // --- End File Tree Functions ---
 
   const placeholders = [

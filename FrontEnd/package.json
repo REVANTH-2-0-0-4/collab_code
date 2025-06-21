@@ -17,6 +17,7 @@
     "@react-three/fiber": "^9.0.4",
     "@tabler/icons-react": "^3.30.0",
     "@tailwindcss/vite": "^4.0.9",
+    "@webcontainer/api": "^1.6.1",
     "axios": "^1.8.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
