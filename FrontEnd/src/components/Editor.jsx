@@ -6,6 +6,7 @@ import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
 import TracingBeam from "../components/TracingBeam.jsx";
 import axios from "../config/axios.js";
 import UserSelectionModal from "./modals/UserSelectionModal.jsx";
+import IframeModal from "./modals/IframeModal.jsx"; // Import the new IframeModal
 import { receiveMessage, sendMessage, initializeSocket } from "@/config/socket.js";
 import { UserContext } from "@/context/Usercontext.jsx";
 import Message from "./Message.jsx";
@@ -54,6 +55,8 @@ const Editor = () => {
   const [fileTree, setFileTree] = useState({}); // Will be updated from Gemini response
   const [openFiles, setOpenFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState(null);
+  const [iframeUrl, setIframeUrl] = useState(null);
+  const [isIframeModalOpen, setIsIframeModalOpen] = useState(false); // New state for iframe modal
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -121,6 +124,13 @@ const Editor = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Open iframe modal when iframeUrl is set
+  useEffect(() => {
+    if (iframeUrl) {
+      setIsIframeModalOpen(true);
+    }
+  }, [iframeUrl]);
 
   const handleUserSelection = () => {
     setIsModalOpen(false);
@@ -229,6 +239,7 @@ const Editor = () => {
   // Handle Run Code functionality
   const handleRunCode = async () => {
     console.log("Running code...");
+    await webContainer?.mount(fileTree);
     const installprocess = await webContainer.spawn("npm", ["install"]);
     installprocess.output.pipeTo(new WritableStream({
       write: (chunk) => console.log(chunk)
@@ -237,10 +248,24 @@ const Editor = () => {
     runProcess.output.pipeTo(new WritableStream({
       write: (chunk) => console.log(chunk)
     }));
-    
+    // throw an event when server is ready
+    webContainer.on('server-ready',(port,url) =>{
+      setIframeUrl(url);
+      console.log(`Server is ready at ${url}, port: ${port}`);
+    })
   };
-  
 
+  // Handle closing iframe modal
+  const handleCloseIframeModal = () => {
+    setIsIframeModalOpen(false);
+    // Optionally reset iframeUrl if you want to clear it
+    // setIframeUrl(null);
+  };
+
+  // Handle URL change from iframe modal
+  const handleIframeUrlChange = (newUrl) => {
+    setIframeUrl(newUrl);
+  };
 
   // --- End File Tree Functions ---
 
@@ -412,6 +437,14 @@ const Editor = () => {
         users={users}
         selectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
+      />
+
+      {/* Iframe Preview Modal */}
+      <IframeModal
+        isOpen={isIframeModalOpen}
+        onClose={handleCloseIframeModal}
+        iframeUrl={iframeUrl}
+        onUrlChange={handleIframeUrlChange}
       />
 
       {/* Custom Scrollbar Styles */}
