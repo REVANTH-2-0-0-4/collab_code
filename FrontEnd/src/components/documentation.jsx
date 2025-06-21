@@ -9,7 +9,7 @@ const DocumentationPage = () => {
         {
             id: "overview",
             title: "Overview",
-            content: "Collab Code is a modern messaging application leveraging Socket.io for real-time communication and integrating Gemini AI for AI-powered responses. Users can interact with Gemini AI during conversations by starting their messages with @ai. The application is built using the MERN stack (MongoDB, Express, React, Node.js) and incorporates various technologies to ensure seamless functionality."
+            content: "Collab Code is a modern messaging application leveraging Socket.io for real-time communication, integrating Gemini AI via Google's Generative AI library, and utilizing the WebContainer API to run code directly in the browser. Users can interact with Gemini AI during conversations by starting their messages with @ai. The application is built using the MERN stack (MongoDB, Express, React, Node.js) alongside additional technologies to ensure seamless functionality."
         },
         {
             id: "features",
@@ -26,8 +26,9 @@ const DocumentationPage = () => {
             id: "tech-stack",
             title: "Tech Stack",
             content: [
-                "Frontend: React.js",
-                "Backend: Node.js, Express.js",
+                "Frontend: React.js with Tailwind CSS and the WebContainer API",
+                "Backend: Node.js, Express.js, NodeGit, Passport",
+                "AI Integration: Google Generative AI (Gemini)",
                 "Database: MongoDB (with Mongoose for ODM)",
                 "Real-time Communication: Socket.io"
             ]
@@ -36,19 +37,24 @@ const DocumentationPage = () => {
             id: "folder-structure",
             title: "Folder Structure",
             codeBlock: `COLLAB CODE
-├── backend
+├── BackEnd
+│   ├── controllers
+│   ├── middlewares
 │   ├── routes
 │   ├── services
-│   ├── controllers
 │   ├── db
 │   │   └── models
 │   ├── app.js
 │   ├── server.js
 │   ├── package.json
 │   └── package-lock.json
-├── frontend
-│   └── [React.js architecture]
-├── notes.md`
+├── FrontEnd
+│   ├── public
+│   ├── src
+│   ├── package.json
+│   └── package-lock.json
+├── README.md
+└── package.json`
         },
         {
             id: "npm-packages",
@@ -58,25 +64,54 @@ const DocumentationPage = () => {
                     title: "Backend Packages",
                     headers: ["Package", "Description"],
                     rows: [
-                        ["express", "Web framework for handling routes, middleware, and HTTP requests/responses"],
-                        ["mongoose", "Object Data Modeling (ODM) library for MongoDB"],
+                        ["@google/generative-ai", "Google's Generative AI library"],
                         ["bcrypt", "Library for hashing passwords securely"],
-                        ["cookie-parser", "Middleware to parse cookies from incoming requests"],
-                        ["jsonwebtoken", "Used for token-based authentication"],
-                        ["nodemon", "Development tool for automatic server restarting"],
-                        ["morgan", "HTTP request logger middleware"],
-                        ["dotenv", "Loads environment variables from .env file"],
+                        ["cookie-parser", "Middleware to parse cookies"],
                         ["cors", "Middleware for handling Cross-Origin Resource Sharing"],
-                        ["express-validator", "Library for validating and sanitizing user inputs"]
+                        ["dotenv", "Loads environment variables from .env files"],
+                        ["express", "Web framework for handling routes, middleware, and HTTP requests/responses"],
+                        ["express-validator", "Library for validating and sanitizing user inputs"],
+                        ["jsonwebtoken", "Token-based authentication"],
+                        ["mongoose", "Object Data Modeling (ODM) library for MongoDB"],
+                        ["morgan", "HTTP request logger middleware"],
+                        ["nodegit", "Library for running Git commands in Node.js"],
+                        ["passport", "Authentication middleware for Node.js"],
+                        ["passport-github", "GitHub OAuth strategy for Passport"],
+                        ["socket.io", "Real-time bidirectional communication"]
                     ]
                 },
                 {
                     title: "Frontend Packages",
                     headers: ["Package", "Description"],
                     rows: [
+                        ["@radix-ui/react-label", "Accessible label component"],
+                        ["@radix-ui/react-slot", "Primitive slot component from Radix"],
+                        ["@react-oauth/google", "Google OAuth integration for React"],
+                        ["@react-three/drei", "Helper components for react-three-fiber"],
+                        ["@react-three/fiber", "React renderer for three.js"],
+                        ["@tabler/icons-react", "Tabler icon set for React"],
+                        ["@tailwindcss/vite", "Tailwind CSS plugin for Vite"],
+                        ["@webcontainer/api", "Run Node.js apps in the browser"],
+                        ["axios", "Promise-based HTTP client"],
+                        ["class-variance-authority", "Conditional classNames utility"],
+                        ["clsx", "Utility for constructing className strings"],
+                        ["dotenv", "Loads environment variables"],
+                        ["framer-motion", "Animation library for React"],
+                        ["jwt-decode", "Decode JWT tokens"],
+                        ["lucide-react", "Icon set for React"],
+                        ["motion", "Animation helpers for React"],
+                        ["prop-types", "Runtime type checking for React props"],
                         ["react", "JavaScript library for building user interfaces"],
-                        ["react-dom", "Handles rendering React components to the DOM"],
-                        ["axios", "Promise-based HTTP client for API requests"]
+                        ["react-dom", "Renders React components to the DOM"],
+                        ["react-icons", "SVG icon library for React"],
+                        ["react-router-dom", "Routing library for React"],
+                        ["socket.io", "Real-time event library"],
+                        ["socket.io-client", "Client for Socket.io"],
+                        ["tailwind-merge", "Utility to merge Tailwind CSS classes"],
+                        ["tailwind-scrollbar-hide", "Hide scrollbars with Tailwind"],
+                        ["tailwindcss-animate", "Animations for Tailwind CSS"],
+                        ["three", "3D library for WebGL"],
+                        ["three-globe", "Globe visualization built on three.js"]
                     ]
                 }
             ]
@@ -105,23 +140,23 @@ const DocumentationPage = () => {
                         },
                         {
                             text: "Install backend dependencies:",
-                            code: "cd backend\nnpm install"
+                            code: "cd BackEnd\nnpm install"
                         },
                         {
                             text: "Install frontend dependencies:",
-                            code: "cd ../frontend\nnpm install"
+                            code: "cd ../FrontEnd\nnpm install"
                         },
                         {
                             text: "Configure environment variables:",
-                            subtext: "Create a .env file in the backend folder.",
+                            subtext: "Create a .env file in the BackEnd folder.",
                             code: "PORT=3000\nMONGO_URI=your_mongodb_connection_string\nJWT_SECRET=your_jwt_secret"
                         },
                         {
                             text: "Start the development server:",
                             subtext: "For backend:",
-                            code: "cd backend\nnpm run dev",
+                            code: "cd BackEnd\nnpm run dev",
                             secondSubtext: "For frontend:",
-                            secondCode: "cd ../frontend\nnpm start"
+                            secondCode: "cd ../FrontEnd\nnpm start"
                         }
                     ]
                 }
