@@ -34,6 +34,33 @@ export const createaproject = async (name,description, id) => {
   }
 };
 
+export const updateFileTree = async (projectid, fileTree) => {
+  try {
+    if (!projectid) {
+      throw new Error("project id not provided");
+    }
+    if (!mongoose.Types.ObjectId.isValid(projectid)) {
+      throw new Error("invalid project id");
+    }
+    if (!fileTree || typeof fileTree !== "object") {
+      throw new Error("file tree is required and should be an object");
+    }
+
+    const project = await projectmodel.findByIdAndUpdate(
+      projectid,
+      { fileTree },
+      { new: true }
+    );
+
+    if (!project) {
+      throw new Error("project not found");
+    }
+
+    return { status: "success", project };
+  } catch (error) {
+    return { status: "error", message: error.message };
+  }
+};
 
 export const getallprojectsbyid = async (userid) => {
   try {

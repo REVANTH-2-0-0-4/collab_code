@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation,useParams } from "react-router-dom";
 import { TbUsers, TbUsersPlus, TbSend, TbX } from "react-icons/tb";
 import { motion, AnimatePresence } from "framer-motion";
 import PlaceholdersAndVanishInput from "./PlaceholdersAndVanishInput.jsx";
@@ -39,7 +39,9 @@ const Sidebar = ({ open, setOpen, children }) => (
 
 const Editor = () => {
   const location = useLocation();
-  const [projectData, setProjectData] = useState(location?.state?.projectdata || { name: "My Project" });
+  // const [projectData, setProjectData] = useState(location?.state?.projectdata || { name: "My Project" });
+  const params = useParams();
+  const [projectData, setProjectData] = useState(location?.state?.projectdata || null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -52,33 +54,101 @@ const Editor = () => {
   const [webContainer, setWebContainer] = useState(null);
 
   // --- File Tree States ---
-  const [fileTree, setFileTree] = useState({}); // Will be updated from Gemini response
+  // const [fileTree, setFileTree] = useState({}); // Will be updated from Gemini response
+    const [fileTree, setFileTree] = useState(location?.state?.fileTree || {});
   const [openFiles, setOpenFiles] = useState([]);
   const [currentFile, setCurrentFile] = useState(null);
   const [iframeUrl, setIframeUrl] = useState(null);
   const [isIframeModalOpen, setIsIframeModalOpen] = useState(false); // New state for iframe modal
 
+
+  //  const [fileTree, setFileTree] = useState(location?.state?.fileTree || {});
+  const fileTreeRef = useRef(fileTree);
+
+
+  useEffect(() => {
+    fileTreeRef.current = fileTree;
+  }, [fileTree]);
+
+   useEffect(() => {
+    if (projectData) return;
+
+    let id = params.projectId;
+    if (!id) {
+      const search = new URLSearchParams(location.search);
+      id = search.get("id") || search.get("projectId");
+    }
+    if (!id) {
+      const parts = location.pathname.split("/");
+      if (parts.length > 2 && parts[2]) id = parts[2];
+    }
+
+    if (id) {
+      axios
+        .get(`/projects/get-project/${id}`)
+        .then((res) => {
+          setProjectData(res.data);
+          if (res.data?.fileTree) {
+            setFileTree(res.data.fileTree);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [location, params, projectData]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const getChats = () => {
+     if (!projectData?._id) return;
     axios
       .post("chats/get-chat", { projectid: projectData._id })
       .then((res) => setMessages(res.data))
       .catch((err) => console.log(err));
   };
 
+   useEffect(() => {
+    const fetchProjectFileTree = async () => {
+      try {
+        const res = await axios.get(`/projects/get-project/${projectData._id}`);
+        if (res.data?.fileTree) {
+          setFileTree(res.data.fileTree);
+          fileTreeRef.current = res.data.fileTree;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchProjectFileTree();
+
+    const handleBeforeUnload = () => {
+      axios
+        .put(`/projects/update-filetree/${projectData._id}`, { fileTree: fileTreeRef.current })
+        .catch((err) => console.log(err));
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      handleBeforeUnload();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+
   // Function to fetch users not in project
   const fetchUsersNotInProject = useCallback(() => {
+     if (!projectData?._id) return;
     axios
       .get(`/users/usersnotinproject/${projectData._id}`)
       .then((res) => setUsers(res.data))
       .catch((err) => console.log(err));
-  }, [projectData._id]);
+  }, [projectData]);
 
   // Initialize socket, load chats, and fetch users
   useEffect(() => {
+     if (!projectData?._id) return;
     initializeSocket({ projectId: projectData._id });
     if(!webContainer) {
       getWebContainer().then(container => { 
@@ -133,6 +203,7 @@ const Editor = () => {
   }, [iframeUrl]);
 
   const handleUserSelection = () => {
+     if (!projectData?._id) return;
     setIsModalOpen(false);
     if (selectedUsers.length === 0) return;
     
@@ -157,6 +228,7 @@ const Editor = () => {
   };
 
   const handleSendMessage = () => {
+     if (!projectData?._id) return;
     if (message.trim()) {
       const newMessage = {
         project: projectData._id,

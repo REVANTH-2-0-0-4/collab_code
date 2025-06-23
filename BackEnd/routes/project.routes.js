@@ -24,6 +24,12 @@ router.put(
     .withMessage("Every user ID should be a string"),
   projectcontroller.adduser
 );
+router.put(
+  "/update-filetree/:id",
+  authmiddleware.auth,
+  body("fileTree").isObject().withMessage("fileTree should be an object"),
+  projectcontroller.updateFileTree
+);
 router.get(
   "/get-project/:id",
   authmiddleware.auth,

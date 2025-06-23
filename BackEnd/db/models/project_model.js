@@ -13,6 +13,10 @@ const  projectSchema = new mongoose.Schema({
         required : true,
         trim : true,
     },
+     fileTree : {
+        type : Schema.Types.Mixed,
+        default : {}
+    },
     users  : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "user"

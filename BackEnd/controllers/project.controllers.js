@@ -52,7 +52,24 @@ export const getallprojects = async (req, res) => {
 
 };
 
-
+export const updateFileTree = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: "error", errors: errors.array() });
+  }
+  try {
+    const projectid = req.params.id;
+    const { fileTree } = req.body;
+    const response = await projectservices.updateFileTree(projectid, fileTree);
+    if (response.status === "error") {
+      return res.status(400).json({ status: "error", message: response.message });
+    }
+    return res.status(200).json({ status: "success", project: response.project });
+  } catch (err) {
+    console.error("Error in updateFileTree:", err.message);
+    return res.status(500).json({ status: "error", message: "Internal Server Error" });
+  }
+};
 export const adduser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
