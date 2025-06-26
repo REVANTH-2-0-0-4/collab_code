@@ -52,7 +52,9 @@ const Login = () => {
       console.log("Access Token:", tokenResponse.access_token);
 
       // Fetch user info from Google API
+
       try {
+        console.log("Fetching user data...");
         const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
