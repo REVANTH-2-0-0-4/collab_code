@@ -22,6 +22,19 @@ const userschema = new mongoose.Schema({
     password: {
         type: String,
         select: false
+    },
+    githubId: {
+        type: String,
+        sparse: true
+    },
+    githubUsername: {
+        type: String
+    },
+    githubAccessToken: {
+        type: String
+    },
+    githubAvatar: {
+        type: String
     }
 })
 userschema.statics.hashpassword = async (password) => {

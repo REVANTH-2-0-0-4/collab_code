@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import axios from "../config/axios.js";
 
 import { Input } from "./Input";
-import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
 import FloatingDockDesktop from "./FloatingDockDesktop";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/Usercontext.jsx";
@@ -163,13 +163,26 @@ const Login = () => {
               <div className="flex-grow border-t border-gray-600"></div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              className="w-full bg-[#00607A] hover:bg-[#004052] text-white py-3 rounded-lg transition-colors duration-300 font-semibold flex items-center justify-center"
-            >
-              <FaGoogle className="mr-2" /> Continue with Google
-            </button>
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+                  window.location.href = `${backendUrl}/git/auth/github`;
+                }}
+                className="w-full bg-gray-900 hover:bg-gray-800 border border-gray-700 text-white py-3 rounded-lg transition-colors duration-300 font-semibold flex items-center justify-center cursor-pointer shadow-md"
+              >
+                <FaGithub className="mr-2" size={18} /> Continue with GitHub
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="w-full bg-[#00607A] hover:bg-[#004052] text-white py-3 rounded-lg transition-colors duration-300 font-semibold flex items-center justify-center cursor-pointer shadow-md"
+              >
+                <FaGoogle className="mr-2" /> Continue with Google
+              </button>
+            </div>
           </form>
 
           <div className="text-center text-sm text-gray-300 mt-6">

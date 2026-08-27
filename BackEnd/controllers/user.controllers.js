@@ -40,7 +40,7 @@ export const createusercontroller = async (req, res) => {
     }
     else {
         try {
-            // console.log(req.body);
+
             const user = await userservice.createuser(req.body);
             const token = user.generateJWT();
             delete user._doc.password;

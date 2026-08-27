@@ -26,7 +26,9 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      'monaco-editor/esm/vs/editor/editor.api.js': path.resolve(__dirname, './node_modules/monaco-editor/esm/vs/editor/editor.api.js'),
+      'monaco-editor/esm/vs/editor/editor.api': path.resolve(__dirname, './node_modules/monaco-editor/esm/vs/editor/editor.api.js')
     }
   }
 })

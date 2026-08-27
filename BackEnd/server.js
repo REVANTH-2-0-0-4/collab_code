@@ -6,11 +6,13 @@ import mongoose from 'mongoose';
 import project_model from './db/models/project_model.js';
 import Chat from './db/models/chat_model.js';
 import { generateResult } from './services/ai.services.js';
+import { setupYjsWebSocket } from './services/yjs.service.js';
 const PORT=process.env.PORT || 3000;
 // to create the socket server we need the raw http server not the express app
 // so we create a server using http.createServer and pass the express app to it
 // then we create a socket server using the raw http server and pass the express
 const server=http.createServer(app);
+setupYjsWebSocket(server);
 const io= new Server(server,{cors: {
         origin: '*'
     }});
@@ -54,28 +56,49 @@ io.on('connection',socket=>{
         io.to(socket.roomId).emit('project-message',data);
         const isAiPresent = message.includes('@ai');
         if(isAiPresent){
-            // console.log("yes ai is present");
-            let res= await generateResult(data.message);
-            const parsed = JSON.parse(res);
-            console.log("lets see the parsed message : ",parsed);
-            console.log("lets see the res message : ",res);
-            console.log("lets see the res message type : ",typeof res);
-            console.log("lets see the parsed message type : ",typeof parsed.text);
-            // console.log(res);
-            let newmessage={
-                email:'AI@ai.com',
-                sender:'67d7da39b9b904cb0ad30971',
-                project:socket.roomId,
-                message:parsed.text,
-            }
-            await Chat.create(newmessage);
-            io.to(socket.roomId).emit('project-message',{
-                message:res.toString(),
-                sender:{
-                    _id:'67d7da39b9b904cb0ad30971',
-                    email:'AI@ai.com'
+            // Broadcast lock to all users in the project room
+            io.to(socket.roomId).emit('file-locked', {
+                locked: true,
+                lockedBy: socket.user?.email || 'AI Assistant',
+                message: 'AI is generating code updates...'
+            });
+
+            try {
+                let res = await generateResult(data.message);
+                let parsedText = res;
+                try {
+                    let clean = res;
+                    const match = res.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+                    if (match) clean = match[1];
+                    const parsed = JSON.parse(clean);
+                    if (parsed.text) parsedText = parsed.text;
+                } catch (parseErr) {
+                    console.warn("Could not extract parsed.text:", parseErr.message);
                 }
-            })
+
+                let newmessage = {
+                    email: 'AI@ai.com',
+                    sender: '67d7da39b9b904cb0ad30971',
+                    project: socket.roomId,
+                    message: parsedText,
+                };
+                await Chat.create(newmessage);
+
+                io.to(socket.roomId).emit('project-message', {
+                    message: res.toString(),
+                    sender: {
+                        _id: '67d7da39b9b904cb0ad30971',
+                        email: 'AI@ai.com'
+                    }
+                });
+            } catch (err) {
+                console.error("AI Generation Error:", err);
+            } finally {
+                // Broadcast unlock to all users
+                io.to(socket.roomId).emit('file-unlocked', {
+                    locked: false
+                });
+            }
             return;
         }
     })

@@ -16,10 +16,12 @@ import {
   ChevronIcon,
 } from "../../modals/createfoldermodal/glow-button";
 import { useNavigate } from "react-router-dom";
+import WorkspaceModeModal from "../modals/WorkspaceModeModal.jsx";
 
 export const HoverEffect = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
+  const [selectedProjectForMode, setSelectedProjectForMode] = useState(null);
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const fetchProjects = useCallback(async () => {
@@ -50,10 +52,23 @@ export const HoverEffect = () => {
   const handleProjectClick = async (id) => {
     try {
       const projectData = await fetchprojectdata(id);
-      // console.log("the project data is ", projectData);
-      navigate("/editor", { state: { projectdata: projectData } });
+      if (projectData) {
+        setSelectedProjectForMode(projectData);
+      }
     } catch (err) {
-      console.error("Error navigating to project:", err);
+      console.error("Error fetching project for mode selection:", err);
+    }
+  };
+
+  const handleSelectMode = (mode) => {
+    if (selectedProjectForMode) {
+      navigate("/editor", {
+        state: {
+          projectdata: selectedProjectForMode,
+          mode: mode, // 'collaborative' | 'individual'
+        },
+      });
+      setSelectedProjectForMode(null);
     }
   };
 
@@ -129,6 +144,14 @@ export const HoverEffect = () => {
           </a>
         ))}
       </div>
+
+      {/* Workspace Mode Selection Modal */}
+      <WorkspaceModeModal
+        isOpen={Boolean(selectedProjectForMode)}
+        onClose={() => setSelectedProjectForMode(null)}
+        project={selectedProjectForMode}
+        onSelectMode={handleSelectMode}
+      />
     </div>
   );
 };

@@ -1,19 +1,21 @@
 import { Router } from "express";
+import * as gitController from "../controllers/gitController.js";
+import { auth } from "../middlewares/auth.middleware.js";
+
 const router = Router();
 
-// Import Git controller functions (adjust the path as needed)
-import * as  gitController from '../controllers/gitController.js';
+// GitHub OAuth routes (public entry points)
+router.get("/auth/github", gitController.getGitHubAuthUrl);
+router.get("/auth/github/callback", gitController.githubCallback);
 
-// Route to initialize a new Git repository for a project
-router.post('/init', gitController.initRepo);
-
-// Route to commit changes
-router.post('/commit', gitController.commitChanges);
-
-// Route to get commit history (git log)
-router.get('/logs', gitController.getLogs);
-
-// Route to push changes to a remote repository
-router.post('/push', gitController.pushChanges);
+// Protected VCS operations
+router.get("/status", auth, gitController.getGitStatus);
+router.get("/repos", auth, gitController.getRepos);
+router.post("/link-repo", auth, gitController.linkRepo);
+router.post("/create-repo", auth, gitController.createRepo);
+router.post("/commit-and-push", auth, gitController.commitAndPush);
+router.get("/commits", auth, gitController.getLogs);
+router.post("/connect-token", auth, gitController.connectWithToken);
+router.post("/disconnect", auth, gitController.disconnectGitHub);
 
 export default router;

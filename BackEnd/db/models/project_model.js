@@ -20,6 +20,12 @@ const  projectSchema = new mongoose.Schema({
     users  : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "user"
-    }]
+    }],
+    githubRepo: {
+        owner: { type: String },
+        repo: { type: String },
+        defaultBranch: { type: String, default: "main" },
+        url: { type: String }
+    }
 })
 export default mongoose.model("project",projectSchema);   
